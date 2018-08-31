@@ -272,3 +272,60 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct XD_TIMESYSTEM_API FXD_EveryHourParam
+{
+	GENERATED_BODY()
+public:
+	FXD_EveryHourParam() = default;
+	FXD_EveryHourParam(int32 Ticks)
+		:Ticks(Ticks)
+	{}
+
+	FXD_EveryHourParam(int32 Monute)
+		:Ticks(Monute * FXD_GameTime::TicksPerMinute)
+	{}
+
+private:
+	UPROPERTY()
+	int32 Ticks;
+};
+
+USTRUCT(BlueprintType)
+struct XD_TIMESYSTEM_API FXD_EveryDayParam
+{
+	GENERATED_BODY()
+public:
+	FXD_EveryDayParam() = default;
+	FXD_EveryDayParam(int32 Ticks)
+		:Ticks(Ticks)
+	{}
+
+	FXD_EveryDayParam(int32 Hour, int32 Monute)
+		:Ticks(Hour * FXD_GameTime::TicksPerHour + Monute * FXD_GameTime::TicksPerMinute)
+	{}
+
+private:
+	UPROPERTY()
+	int32 Ticks;
+};
+
+USTRUCT(BlueprintType)
+struct XD_TIMESYSTEM_API FXD_EveryMonthParam
+{
+	GENERATED_BODY()
+public:
+	FXD_EveryMonthParam() = default;
+	FXD_EveryMonthParam(int32 Ticks)
+		:Ticks(Ticks)
+	{}
+
+	FXD_EveryMonthParam(int32 Day, int32 Hour, int32 Monute)
+		:Ticks(Day * FXD_GameTime::TicksPerDay + Hour * FXD_GameTime::TicksPerHour + Monute * FXD_GameTime::TicksPerMinute)
+	{}
+
+private:
+	UPROPERTY()
+	int32 Ticks;
+};
+
