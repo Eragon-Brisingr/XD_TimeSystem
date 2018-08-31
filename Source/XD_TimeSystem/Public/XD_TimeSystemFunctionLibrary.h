@@ -187,4 +187,53 @@ public:
 	{
 		return FXD_GameTime::IsLeapYear(Year);
 	}
+
+public:
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
+	static FXD_EveryHourConfig MakeEveryHourConfig(int32 Minute)
+	{
+		return FXD_EveryHourConfig(Minute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
+	static void BreakEveryHourConfig(const FXD_EveryHourConfig& EveryHourConfig, int32& Monute)
+	{
+		EveryHourConfig.GetConfig(Monute);
+	}
+	
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
+	static FXD_EveryDayConfig MakeEveryDayConfig(int32 Hour, int32 Monute)
+	{
+		return FXD_EveryDayConfig(Hour, Monute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
+	static void BreakEveryDayConfig(const FXD_EveryDayConfig& EveryDayConfig, int32& Hour, int32& Monute)
+	{
+		EveryDayConfig.GetConfig(Hour, Monute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
+	static FXD_EveryWeekDayConfig MakeEveryWeekDayConfig(int32 WeekDay, int32 Hour, int32 Monute)
+	{
+		return FXD_EveryWeekDayConfig(WeekDay, Hour, Monute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
+	static void BreakEveryWeekDayConfig(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, int32& WeekDay, int32& Hour, int32& Monute)
+	{
+		EveryWeekDayConfig.GetConfig(WeekDay, Hour, Monute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
+	static FXD_EveryMonthConfig MakeEveryMonthConfig(int32 Day, int32 Hour, int32 Monute)
+	{
+		return FXD_EveryMonthConfig(Day, Hour, Monute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
+	static void BreakEveryMonthConfig(const FXD_EveryMonthConfig& EveryMonthConfig, int32& Day, int32& Hour, int32& Monute)
+	{
+		EveryMonthConfig.GetConfig(Day, Hour, Monute);
+	}
 };

@@ -35,11 +35,44 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "时间系统", Replicated)
 	float TimeSpendRate = 20.f;
 
-	TMap<int32, TArray<FXD_GameTimeTask>> EveryMinuteEvent;
+	TMap<FXD_EveryHourConfig, TArray<FXD_GameTimeEvent>> EveryHourEvents;
 
-	TMap<int32, TArray<FXD_GameTimeTask>> EveryHourEvent;
+	TMap<FXD_EveryDayConfig, TArray<FXD_GameTimeEvent>> EveryDayEvents;
 
-	TMap<int32, TArray<FXD_GameTimeTask>> EveryDayEvent;
+	TMap<FXD_EveryMonthConfig, TArray<FXD_GameTimeEvent>> EveryMonthEvents;
 
+	TMap<FXD_EveryWeekDayConfig, TArray<FXD_GameTimeEvent>> EveryWeekDayEvents;
 
+	void InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents)
+	{
+		for (const FXD_GameTimeEvent& GameTimeEvent : GameTimeEvents)
+		{
+			GameTimeEvent.ExecuteIfBound();
+		}
+	}
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)
+	{
+		EveryHourEvents.FindOrAdd(EveryHourConfig).Add(EveryHourEvent);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent)
+	{
+		EveryDayEvents.FindOrAdd(EveryDayConfig).Add(EveryDayEvent);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryDayEvent)
+	{
+		EveryMonthEvents.FindOrAdd(EveryMonthConfig).Add(EveryDayEvent);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddEveryWeekDayEvent_Instant(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryDayEvent)
+	{
+		EveryWeekDayEvents.FindOrAdd(EveryWeekDayConfig).Add(EveryDayEvent);
+	}
 };

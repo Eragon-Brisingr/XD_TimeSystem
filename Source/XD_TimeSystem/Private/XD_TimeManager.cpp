@@ -45,37 +45,61 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 // 
 // 	}
 
-	//Every Minute
 	int64 PreMinutes = PreTicks / FXD_GameTime::TicksPerMinute;
 	int64 CurMinutes = CurrentTime.GetTicks() / FXD_GameTime::TicksPerMinute;
 	int64 SpendMinutes = CurMinutes - PreMinutes;
 	if (SpendMinutes > 0)
 	{
-		//Every Hour
-		int64 PreHours = PreTicks / FXD_GameTime::TicksPerHour;
-		int64 CurHours = CurrentTime.GetTicks() / FXD_GameTime::TicksPerHour;
-		int64 SpendHours = CurHours - PreHours;
-		if (SpendHours > 0)
+		for (int64 InterpTicks = (PreMinutes + 1) * FXD_GameTime::TicksPerMinute; InterpTicks <= CurMinutes  * FXD_GameTime::TicksPerMinute; InterpTicks += FXD_GameTime::TicksPerMinute)
 		{
+			//Every Hour
+			{
+				FXD_EveryHourConfig EveryHourConfig;
+				EveryHourConfig.Ticks = InterpTicks % FXD_GameTime::TicksPerHour;
+				if (TArray<FXD_GameTimeEvent>* Events = EveryHourEvents.Find(EveryHourConfig))
+				{
+					InvokeExecuteGameTimeEvents(*Events);
+				}
+			}
 
-		}
+			//Every Day
+			{
+				int64 PreHours = InterpTicks / FXD_GameTime::TicksPerHour;
+				int64 CurHours = CurrentTime.GetTicks() / FXD_GameTime::TicksPerHour;
+				int64 SpendHours = CurHours - PreHours;
+				FXD_EveryDayConfig EveryDayConfig;
+				EveryDayConfig.Ticks = InterpTicks % FXD_GameTime::TicksPerDay;
+				if (TArray<FXD_GameTimeEvent>* Events = EveryDayEvents.Find(EveryDayConfig))
+				{
+					InvokeExecuteGameTimeEvents(*Events);
+				}
+			}
 
-		//Every Day
-		int64 PreDays = PreTicks / FXD_GameTime::TicksPerDay;
-		int64 CurDays = CurrentTime.GetTicks() / FXD_GameTime::TicksPerDay;
-		int64 SpendDays = CurDays - PreDays;
-		if (SpendDays > 0)
-		{
+			//Every Week
+			{
+				int64 PreWeeks = InterpTicks / FXD_GameTime::TicksPerWeek;
+				int64 CurWeeks = CurrentTime.GetTicks() / FXD_GameTime::TicksPerWeek;
+				int64 SpendWeeks = CurWeeks - PreWeeks;
+				FXD_EveryWeekDayConfig EveryWeekConfig;
+				EveryWeekConfig.Ticks = InterpTicks % FXD_GameTime::TicksPerWeek;
+				if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekConfig))
+				{
+					InvokeExecuteGameTimeEvents(*Events);
+				}
+			}
 
-		}
-
-		//Every Week
-		int64 PreWeeks = PreTicks / FXD_GameTime::TicksPerWeek;
-		int64 CurWeeks = CurrentTime.GetTicks() / FXD_GameTime::TicksPerWeek;
-		int64 SpendWeeks = CurWeeks - PreWeeks;
-		if (SpendWeeks > 0)
-		{
-
+// 			//Every Month
+// 			{
+// 				int64 PreDays = InterpTicks / FXD_GameTime::TicksPerDay;
+// 				int64 CurDays = CurrentTime.GetTicks() / FXD_GameTime::TicksPerDay;
+// 				int64 SpendDays = CurDays - PreDays;
+// 				FXD_EveryMonthConfig EveryMonthConfig;
+// 				EveryMonthConfig.Ticks = InterpTicks;
+// 				if (TArray<FXD_GameTimeEvent>* Events = EveryMonthEvents.Find(EveryMonthConfig))
+// 				{
+// 					InvokeExecuteGameTimeEvents(*Events);
+// 				}
+// 			}
 		}
 	}
 }
