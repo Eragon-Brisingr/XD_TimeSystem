@@ -5,6 +5,8 @@
 #include "XD_TimeSystemUtility.h"
 #include "XD_TimeSystem_GameStateInterface.h"
 #include <GameFramework/GameStateBase.h>
+#include "XD_GameTimeEventInterface.h"
+#include <EngineUtils.h>
 
 
 // Sets default values for this component's properties
@@ -25,7 +27,19 @@ void UXD_TimeManager::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
+	for (TActorIterator<AActor> It(GetWorld(), AActor::StaticClass()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->IsPendingKill())
+		{
+			IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+		}
+	}
+	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Actor)
+	{
+		IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+	}));
 }
 
 
@@ -37,15 +51,6 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// ...
 	int64 PreTicks = CurrentTime.GetTicks();
 	CurrentTime += DeltaTime * FXD_GameTime::TicksPerSecond * TimeSpendRate;
-
-// 	//Every Second
-// 	int64 PreSeconds = PreTicks / FXD_GameTime::TicksPerSecond;
-// 	int64 CurSeconds = CurrentTime.GetTicks() / FXD_GameTime::TicksPerSecond;
-// 	int64 SpendSceonds = CurSeconds - PreSeconds;
-// 	if (SpendSceonds > 0)
-// 	{
-// 
-// 	}
 
 	int64 PreMinutes = PreTicks / FXD_GameTime::TicksPerMinute;
 	int64 CurMinutes = CurrentTime.GetTicks() / FXD_GameTime::TicksPerMinute;
@@ -78,7 +83,7 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 			//Every Week
 			{
-				if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(FXD_EveryWeekDayConfig(InterpWeekDay, InterpHour, InterpMinute)))
+				if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(FXD_EveryWeekConfig(InterpWeekDay, InterpHour, InterpMinute)))
 				{
 					InvokeExecuteGameTimeEvents(*Events);
 				}
@@ -145,7 +150,7 @@ void UXD_TimeManager::AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDa
 	EveryDayEvents.FindOrAdd(EveryDayConfig).Add(EveryDayEvent);
 }
 
-void UXD_TimeManager::AddEveryWeekDayEvent_Instant(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
+void UXD_TimeManager::AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
 {
 	EveryWeekDayEvents.FindOrAdd(EveryWeekDayConfig).Add(EveryWeekDayEvent);
 }
@@ -181,7 +186,7 @@ void UXD_TimeManager::RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConf
 	}
 }
 
-void UXD_TimeManager::RemoveEveryWeekDayEvent(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
+void UXD_TimeManager::RemoveEveryWeekDayEvent(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
 {
 	if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekDayConfig))
 	{
@@ -231,7 +236,7 @@ bool UXD_TimeManager::ContainsEveryDayEvent(const FXD_EveryDayConfig& EveryDayCo
 	return false;
 }
 
-bool UXD_TimeManager::ContainsEveryWeekDayEvent(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent) const
+bool UXD_TimeManager::ContainsEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent) const
 {
 	if (const TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekDayConfig))
 	{
@@ -265,5 +270,62 @@ bool UXD_TimeManager::ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& Spec
 		return Events->Contains(EveryYearEvent);
 	}
 	return false;
+}
+
+void UXD_TimeManager::AddEveryHourEvent_Duration(const FXD_EveryHourConfig& Start, const FXD_EveryHourConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+{
+	if (CurrentTime.InHourRange(Start, End))
+	{
+		EveryHourEvent.ExecuteIfBound();
+	}
+	AddEveryHourEvent_Instant(Start, EveryHourEvent);
+}
+
+void UXD_TimeManager::AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+{
+	if (CurrentTime.InDayRange(Start, End))
+	{
+		EveryHourEvent.ExecuteIfBound();
+	}
+	AddEveryDayEvent_Instant(Start, EveryHourEvent);
+}
+
+void UXD_TimeManager::AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+{
+	if (CurrentTime.InWeekRange(Start, End))
+	{
+		EveryHourEvent.ExecuteIfBound();
+	}
+	AddEveryWeekEvent_Instant(Start, EveryHourEvent);
+}
+
+void UXD_TimeManager::AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+{
+	if (CurrentTime.InMonthRange(Start, End))
+	{
+		EveryHourEvent.ExecuteIfBound();
+	}
+	AddEveryMonthEvent_Instant(Start, EveryHourEvent);
+}
+
+void UXD_TimeManager::AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+{
+	if (CurrentTime.InYearRange(Start, End))
+	{
+		EveryHourEvent.ExecuteIfBound();
+	}
+	AddEveryYearEvent_Instant(Start, EveryHourEvent);
+}
+
+void UXD_TimeManager::AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+{
+	if (CurrentTime.InSpecialTimeRange(Start, End))
+	{
+		EveryHourEvent.ExecuteIfBound();
+	}
+	else if (CurrentTime < Start.SpecialTime)
+	{
+		AddSpecialTimeEvent_Instant(Start, EveryHourEvent);
+	}
 }
 

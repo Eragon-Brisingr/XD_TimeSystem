@@ -14,6 +14,12 @@ void FXD_TimeSystem_EditorModule::StartupModule()
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 		RegisterCustomProperty(struct FXD_GameTime, FXD_GameTime_Customization);
+		RegisterCustomProperty(struct FXD_EveryHourConfig, FXD_EveryHourConfig_Customization);
+		RegisterCustomProperty(struct FXD_EveryDayConfig, FXD_EveryDayConfig_Customization);
+		RegisterCustomProperty(struct FXD_EveryWeekConfig, FXD_EveryWeekConfig_Customization);
+		RegisterCustomProperty(struct FXD_EveryMonthConfig, FXD_EveryMonthConfig_Customization);
+		RegisterCustomProperty(struct FXD_EveryYearConfig, FXD_EveryYearConfig_Customization);
+		RegisterCustomProperty(struct FXD_SpecialTimeConfig, FXD_SpecialTimeConfig_Customization);
 	}
 }
 

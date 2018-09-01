@@ -5,10 +5,40 @@
 
 #define LOCTEXT_NAMESPACE "XD_TimeSystem"
 
-bool FXD_GameTime::InRange(const FXD_GameTime& StartTime, const FXD_GameTime& EndTime) const
+bool FXD_GameTime::InHourRange(const FXD_EveryHourConfig& StartTime, const FXD_EveryHourConfig& EndTime) const
 {
-	const FXD_GameTime& CurrentTime = *this;
-	return StartTime < EndTime ? CurrentTime >= StartTime && CurrentTime < EndTime : CurrentTime >= StartTime || CurrentTime < EndTime;
+	return InTimeRange(GetTicks() % TicksPerHour, StartTime.Ticks, EndTime.Ticks);
+}
+
+bool FXD_GameTime::InDayRange(const FXD_EveryDayConfig& StartTime, const FXD_EveryDayConfig& EndTime) const
+{
+	return InTimeRange(GetTicks() % TicksPerDay, StartTime.Ticks, EndTime.Ticks);
+}
+
+bool FXD_GameTime::InWeekRange(const FXD_EveryWeekConfig& StartTime, const FXD_EveryWeekConfig& EndTime) const
+{
+	return InTimeRange(GetTicks() % TicksPerWeek, StartTime.Ticks, EndTime.Ticks);
+}
+
+bool FXD_GameTime::InMonthRange(const FXD_EveryMonthConfig& StartTime, const FXD_EveryMonthConfig& EndTime) const
+{
+	int32 StartDay, StartHour, StartMinute, EndDay, EndHour, EndMinute;
+	StartTime.GetConfig(StartDay, StartHour, StartMinute);
+	EndTime.GetConfig(EndDay, EndHour, EndMinute);
+	return InTimeRange(GetTicks(), FXD_GameTime(GetYear(), GetMonth(), StartDay, StartHour, StartMinute).GetTicks(), FXD_GameTime(GetYear(), GetMonth(), EndDay, EndHour, EndMinute).GetTicks());
+}
+
+bool FXD_GameTime::InYearRange(const FXD_EveryYearConfig& StartTime, const FXD_EveryYearConfig& EndTime) const
+{
+	int32 StartMonth, StartDay, StartHour, StartMinute, EndMonth, EndDay, EndHour, EndMinute;
+	StartTime.GetConfig(StartMonth, StartDay, StartHour, StartMinute);
+	EndTime.GetConfig(EndMonth, EndDay, EndHour, EndMinute);
+	return InTimeRange(GetTicks(), FXD_GameTime(GetYear(), StartMonth, StartDay, StartHour, StartMinute).GetTicks(), FXD_GameTime(GetYear(), EndMonth, EndDay, EndHour, EndMinute).GetTicks());
+}
+
+bool FXD_GameTime::InSpecialTimeRange(const FXD_SpecialTimeConfig& StartTime, const FXD_SpecialTimeConfig& EndTime) const
+{
+	return StartTime.SpecialTime < EndTime.SpecialTime ? *this >= StartTime.SpecialTime && *this < EndTime.SpecialTime : false;
 }
 
 FText FXD_GameTime::ToText() const
