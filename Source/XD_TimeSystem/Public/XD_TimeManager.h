@@ -39,9 +39,13 @@ public:
 
 	TMap<FXD_EveryDayConfig, TArray<FXD_GameTimeEvent>> EveryDayEvents;
 
+	TMap<FXD_EveryWeekDayConfig, TArray<FXD_GameTimeEvent>> EveryWeekDayEvents;
+
 	TMap<FXD_EveryMonthConfig, TArray<FXD_GameTimeEvent>> EveryMonthEvents;
 
-	TMap<FXD_EveryWeekDayConfig, TArray<FXD_GameTimeEvent>> EveryWeekDayEvents;
+	TMap<FXD_EveryYearConfig, TArray<FXD_GameTimeEvent>> EveryYearEvents;
+
+	TMap<FXD_SpecialTimeConfig, TArray<FXD_GameTimeEvent>> SpecialTimeEvents;
 
 	void InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents)
 	{
@@ -52,27 +56,60 @@ public:
 	}
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)
-	{
-		EveryHourEvents.FindOrAdd(EveryHourConfig).Add(EveryHourEvent);
-	}
+	static UXD_TimeManager* GetGameTimeManager(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent)
-	{
-		EveryDayEvents.FindOrAdd(EveryDayConfig).Add(EveryDayEvent);
-	}
+	void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryDayEvent)
-	{
-		EveryMonthEvents.FindOrAdd(EveryMonthConfig).Add(EveryDayEvent);
-	}
+	void AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent);
+	
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddEveryWeekDayEvent_Instant(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryWeekDayEvent_Instant(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryDayEvent)
-	{
-		EveryWeekDayEvents.FindOrAdd(EveryWeekDayConfig).Add(EveryDayEvent);
-	}
+	void AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddEveryYearEvent_Instant(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent);
+	
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveEveryWeekDayEvent(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent) const;
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent) const;
+	
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsEveryWeekDayEvent(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent) const;
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent) const;
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent) const;
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent) const;
+public:
 };

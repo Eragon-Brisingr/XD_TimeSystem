@@ -11,7 +11,7 @@
  *
  */
 UCLASS()
-class XD_TIMESYSTEM_API UXD_TimeSystemFunctionLibrary : public UBlueprintFunctionLibrary
+class XD_TIMESYSTEM_API UXD_GameTimeTypeFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -87,87 +87,93 @@ public:
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetDate"), Category = "游戏|时间")
-	static FXD_GameTime GetDate(FXD_GameTime A)
+	static FXD_GameTime GetDate(FXD_GameTime GameTime)
 	{
-		return A.GetDate();
+		return GameTime.GetDate();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetDay"), Category = "游戏|时间")
-	static int32 GetDay(FXD_GameTime A)
+	static int32 GetDay(FXD_GameTime GameTime)
 	{
-		return A.GetDay();
+		return GameTime.GetDay();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetDayOfYear"), Category = "游戏|时间")
-	static int32 GetDayOfYear(FXD_GameTime A)
+	static int32 GetDayOfYear(FXD_GameTime GameTime)
 	{
-		return A.GetDayOfYear();
+		return GameTime.GetDayOfYear();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetHour"), Category = "游戏|时间")
-	static int32 GetHour(FXD_GameTime A)
+	static int32 GetHour(FXD_GameTime GameTime)
 	{
-		return A.GetHour();
+		return GameTime.GetHour();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetHour12"), Category = "游戏|时间")
-	static int32 GetHour12(FXD_GameTime A)
+	static int32 GetHour12(FXD_GameTime GameTime)
 	{
-		return A.GetHour12();
+		return GameTime.GetHour12();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetMillisecond"), Category = "游戏|时间")
-	static int32 GetMillisecond(FXD_GameTime A)
+	static int32 GetMillisecond(FXD_GameTime GameTime)
 	{
-		return A.GetMillisecond();
+		return GameTime.GetMillisecond();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetMinute"), Category = "游戏|时间")
-	static int32 GetMinute(FXD_GameTime A)
+	static int32 GetMinute(FXD_GameTime GameTime)
 	{
-		return A.GetMinute();
+		return GameTime.GetMinute();
+	}
+	
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统")
+	static EXD_DayOfWeek GetDayOfWeek(FXD_GameTime GameTime)
+	{
+		return GameTime.GetDayOfWeek();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetMonth"), Category = "游戏|时间")
-	static int32 GetMonth(FXD_GameTime A)
+	static int32 GetMonth(FXD_GameTime GameTime)
 	{
-		return A.GetMonth();
+		return GameTime.GetMonth();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetSecond"), Category = "游戏|时间")
-	static int32 GetSecond(FXD_GameTime A)
+	static int32 GetSecond(FXD_GameTime GameTime)
 	{
-		return A.GetSecond();
+		return GameTime.GetSecond();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetTimeOfDay"), Category = "游戏|时间")
-	static FTimespan GetTimeOfDay(FXD_GameTime A)
+	static FTimespan GetTimeOfDay(FXD_GameTime GameTime)
 	{
-		return A.GetTimeOfDay();
+		return GameTime.GetTimeOfDay();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetYear"), Category = "游戏|时间")
-	static int32 GetYear(FXD_GameTime A)
+	static int32 GetYear(FXD_GameTime GameTime)
 	{
-		return A.GetYear();
+		return GameTime.GetYear();
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "IsAfternoon"), Category = "游戏|时间")
-	static bool IsAfternoon(FXD_GameTime A)
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "IsGameTimefternoon"), Category = "游戏|时间")
+	static bool IsAfternoon(FXD_GameTime GameTime)
 	{
-		return A.IsAfternoon();
+		return GameTime.IsAfternoon();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "IsMorning"), Category = "游戏|时间")
-	static bool IsMorning(FXD_GameTime A)
+	static bool IsMorning(FXD_GameTime GameTime)
 	{
-		return A.IsMorning();
+		return GameTime.IsMorning();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "IsInLeapYear"), Category = "游戏|时间")
-	static bool IsInLeapYear(FXD_GameTime A)
+	static bool IsInLeapYear(FXD_GameTime GameTime)
 	{
-		return A.IsInLeapYear();
+		return GameTime.IsInLeapYear();
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "DaysInMonth"), Category = "游戏|时间")
@@ -187,7 +193,6 @@ public:
 	{
 		return FXD_GameTime::IsLeapYear(Year);
 	}
-
 public:
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
 	static FXD_EveryHourConfig MakeEveryHourConfig(int32 Minute)
@@ -196,44 +201,134 @@ public:
 	}
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
-	static void BreakEveryHourConfig(const FXD_EveryHourConfig& EveryHourConfig, int32& Monute)
+	static void BreakEveryHourConfig(const FXD_EveryHourConfig& EveryHourConfig, int32& Minute)
 	{
-		EveryHourConfig.GetConfig(Monute);
+		EveryHourConfig.GetConfig(Minute);
 	}
 	
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
-	static FXD_EveryDayConfig MakeEveryDayConfig(int32 Hour, int32 Monute)
+	static FXD_EveryDayConfig MakeEveryDayConfig(int32 Hour, int32 Minute)
 	{
-		return FXD_EveryDayConfig(Hour, Monute);
+		return FXD_EveryDayConfig(Hour, Minute);
 	}
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
-	static void BreakEveryDayConfig(const FXD_EveryDayConfig& EveryDayConfig, int32& Hour, int32& Monute)
+	static void BreakEveryDayConfig(const FXD_EveryDayConfig& EveryDayConfig, int32& Hour, int32& Minute)
 	{
-		EveryDayConfig.GetConfig(Hour, Monute);
+		EveryDayConfig.GetConfig(Hour, Minute);
 	}
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
-	static FXD_EveryWeekDayConfig MakeEveryWeekDayConfig(int32 WeekDay, int32 Hour, int32 Monute)
+	static FXD_EveryWeekDayConfig MakeEveryWeekDayConfig(EXD_DayOfWeek WeekDay, int32 Hour, int32 Minute)
 	{
-		return FXD_EveryWeekDayConfig(WeekDay, Hour, Monute);
+		return FXD_EveryWeekDayConfig(WeekDay, Hour, Minute);
 	}
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
-	static void BreakEveryWeekDayConfig(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, int32& WeekDay, int32& Hour, int32& Monute)
+	static void BreakEveryWeekDayConfig(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, EXD_DayOfWeek& WeekDay, int32& Hour, int32& Minute)
 	{
-		EveryWeekDayConfig.GetConfig(WeekDay, Hour, Monute);
+		EveryWeekDayConfig.GetConfig(WeekDay, Hour, Minute);
 	}
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
-	static FXD_EveryMonthConfig MakeEveryMonthConfig(int32 Day, int32 Hour, int32 Monute)
+	static FXD_EveryMonthConfig MakeEveryMonthConfig(int32 Day = 1, int32 Hour = 0, int32 Minute = 0)
 	{
-		return FXD_EveryMonthConfig(Day, Hour, Monute);
+		return FXD_EveryMonthConfig(Day, Hour, Minute);
 	}
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
-	static void BreakEveryMonthConfig(const FXD_EveryMonthConfig& EveryMonthConfig, int32& Day, int32& Hour, int32& Monute)
+	static void BreakEveryMonthConfig(const FXD_EveryMonthConfig& EveryMonthConfig, int32& Day, int32& Hour, int32& Minute)
 	{
-		EveryMonthConfig.GetConfig(Day, Hour, Monute);
+		EveryMonthConfig.GetConfig(Day, Hour, Minute);
 	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
+	static FXD_EveryYearConfig MakeEveryYearConfig(int32 Month = 1, int32 Day = 1, int32 Hour = 0, int32 Minute = 0)
+	{
+		return FXD_EveryYearConfig(Month, Day, Hour, Minute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
+	static void BreakEveryYearConfig(const FXD_EveryYearConfig& EveryYearConfig, int32& Month, int32& Day, int32& Hour, int32& Minute)
+	{
+		EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeMakeFunc))
+	static FXD_SpecialTimeConfig MakeSpecialTimeConfig(int32 Year = 1000, int32 Month = 1, int32 Day = 1, int32 Hour = 0, int32 Minute = 0)
+	{
+		return FXD_SpecialTimeConfig(Year, Month, Day, Hour, Minute);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (NativeBreakFunc))
+	static void BreakSpecialTimeConfig(const FXD_SpecialTimeConfig& SpecialTimeConfig, int32& Year, int32& Month, int32& Day, int32& Hour, int32& Minute)
+	{
+		SpecialTimeConfig.GetConfig(Year, Month, Day, Hour, Minute);
+	}
+};
+
+UCLASS()
+class XD_TIMESYSTEM_API UXD_TimeManagerFunctionLibrary : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+public:
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject", CallableWithoutWorldContext))
+	static class UXD_TimeManager* GetGameTimeManager(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static FXD_GameTime GetGameTime(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent, const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void AddEveryWeekDayEvent_Instant(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void AddEveryYearEvent_Instant(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent, const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void RemoveEveryWeekDayEvent(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void RemoveEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static bool ContainsEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static bool ContainsEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent, const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static bool ContainsEveryWeekDayEvent(const FXD_EveryWeekDayConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static bool ContainsEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static bool ContainsEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static bool ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
 };

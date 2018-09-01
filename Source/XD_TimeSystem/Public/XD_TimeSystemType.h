@@ -11,12 +11,24 @@
  */
 DECLARE_DYNAMIC_DELEGATE(FXD_GameTimeEvent);
 
-USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_TimeSystemFunctionLibrary.MakeGameTime", HasNativeBreak = "XD_TimeSystemFunctionLibrary.BreakGameTime"))
+UENUM(BlueprintType)
+enum class EXD_DayOfWeek : uint8
+{
+	Monday = 0 UMETA(DisplayName = "周一"),
+	Tuesday UMETA(DisplayName = "周二"),
+	Wednesday UMETA(DisplayName = "周三"),
+	Thursday UMETA(DisplayName = "周四"),
+	Friday UMETA(DisplayName = "周五"),
+	Saturday UMETA(DisplayName = "周六"),
+	Sunday UMETA(DisplayName = "周日")
+};
+
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeGameTime", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakGameTime"))
 struct XD_TIMESYSTEM_API FXD_GameTime
 {
 	GENERATED_BODY()
 
-	friend class UXD_TimeSystemFunctionLibrary;
+	friend class UXD_GameTimeTypeFunctionLibrary;
 public:
 	FXD_GameTime() = default;
 	FXD_GameTime(int64 InTicks) : DateTime(InTicks) {}
@@ -121,9 +133,9 @@ public:
 		DateTime = FDateTime(GetYear(), GetMonth(), Day < MaxDays ? Day : MaxDays, GetHour(), GetMinute(), GetSecond(), GetMillisecond());
 	}
 
-	EDayOfWeek GetDayOfWeek() const
+	EXD_DayOfWeek GetDayOfWeek() const
 	{
-		return DateTime.GetDayOfWeek();
+		return static_cast<EXD_DayOfWeek>(DateTime.GetDayOfWeek());
 	}
 
 	int32 GetDayOfYear() const
@@ -272,7 +284,18 @@ public:
 	}
 };
 
-USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_TimeSystemFunctionLibrary.MakeEveryHourConfig", HasNativeBreak = "XD_TimeSystemFunctionLibrary.BreakEveryHourConfig"))
+namespace FXD_GameTimeConfig
+{
+	static constexpr int64 TicksPerDay = FXD_GameTime::TicksPerDay / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerHour = FXD_GameTime::TicksPerHour / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerMicrosecond = FXD_GameTime::TicksPerMicrosecond / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerMillisecond = FXD_GameTime::TicksPerMillisecond / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerMinute = FXD_GameTime::TicksPerMinute / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerSecond = FXD_GameTime::TicksPerSecond / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerWeek = FXD_GameTime::TicksPerWeek / FXD_GameTime::TicksPerSecond;
+};
+
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeEveryHourConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakEveryHourConfig"))
 struct XD_TIMESYSTEM_API FXD_EveryHourConfig
 {
 	GENERATED_BODY()
@@ -280,8 +303,8 @@ struct XD_TIMESYSTEM_API FXD_EveryHourConfig
 public:
 	FXD_EveryHourConfig() = default;
 
-	FXD_EveryHourConfig(int32 Monute)
-		:Ticks(Monute * FXD_GameTime::TicksPerMinute)
+	FXD_EveryHourConfig(int32 Minute)
+		:Ticks(Minute * FXD_GameTimeConfig::TicksPerMinute)
 	{}
 
 	bool operator==(const FXD_EveryHourConfig& EveryHourParam) const
@@ -294,24 +317,25 @@ public:
 		return GetTypeHash(EveryHourParam.Ticks);
 	}
 
-	void GetConfig(int32& Monute) const
+	void GetConfig(int32& Minute) const
 	{
-		Monute = Ticks / FXD_GameTime::TicksPerMinute;
+		Minute = Ticks / FXD_GameTimeConfig::TicksPerMinute;
 	}
 
+private:
 	UPROPERTY()
 	int32 Ticks;
 };
 
-USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_TimeSystemFunctionLibrary.MakeEveryDayConfig", HasNativeBreak = "XD_TimeSystemFunctionLibrary.BreakEveryDayConfig"))
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeEveryDayConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakEveryDayConfig"))
 struct XD_TIMESYSTEM_API FXD_EveryDayConfig
 {
 	GENERATED_BODY()
 public:
 	FXD_EveryDayConfig() = default;
 
-	FXD_EveryDayConfig(int32 Hour, int32 Monute)
-		:Ticks(Hour * FXD_GameTime::TicksPerHour + Monute * FXD_GameTime::TicksPerMinute)
+	FXD_EveryDayConfig(int32 Hour, int32 Minute)
+		:Ticks(Hour * FXD_GameTimeConfig::TicksPerHour + Minute * FXD_GameTimeConfig::TicksPerMinute)
 	{}
 
 	bool operator==(const FXD_EveryDayConfig& EveryDayParam) const
@@ -324,25 +348,30 @@ public:
 		return GetTypeHash(EveryDayParam.Ticks);
 	}
 
-	void GetConfig(int32& Hour, int32& Monute) const
+	void GetConfig(int32& Hour, int32& Minute) const
 	{
-		Hour = Ticks / FXD_GameTime::TicksPerHour;
-		Monute = (Ticks - Hour * FXD_GameTime::TicksPerHour) / FXD_GameTime::TicksPerMinute;
+		Hour = Ticks / FXD_GameTimeConfig::TicksPerHour;
+		Minute = (Ticks - Hour * FXD_GameTimeConfig::TicksPerHour) / FXD_GameTimeConfig::TicksPerMinute;
 	}
 
+private:
 	UPROPERTY()
 	int32 Ticks;
 };
 
-USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_TimeSystemFunctionLibrary.MakeEveryWeekDayConfig", HasNativeBreak = "XD_TimeSystemFunctionLibrary.BreakEveryWeekDayConfig"))
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeEveryWeekDayConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakEveryWeekDayConfig"))
 struct XD_TIMESYSTEM_API FXD_EveryWeekDayConfig
 {
 	GENERATED_BODY()
 public:
 	FXD_EveryWeekDayConfig() = default;
 
-	FXD_EveryWeekDayConfig(int32 WeekDay, int32 Hour, int32 Monute)
-		:Ticks(WeekDay * FXD_GameTime::TicksPerDay + Hour * FXD_GameTime::TicksPerHour + Monute * FXD_GameTime::TicksPerMinute)
+	FXD_EveryWeekDayConfig(int32 WeekDay, int32 Hour, int32 Minute)
+		:Ticks(WeekDay * FXD_GameTimeConfig::TicksPerDay + Hour * FXD_GameTimeConfig::TicksPerHour + Minute * FXD_GameTimeConfig::TicksPerMinute)
+	{}
+
+	FXD_EveryWeekDayConfig(EXD_DayOfWeek WeekDay, int32 Hour, int32 Minute)
+		:FXD_EveryWeekDayConfig(static_cast<int32>(WeekDay), Hour, Minute)
 	{}
 
 	bool operator==(const FXD_EveryWeekDayConfig& EveryWeekParam) const
@@ -355,26 +384,34 @@ public:
 		return GetTypeHash(EveryWeekParam.Ticks);
 	}
 
-	void GetConfig(int32& WeekDay, int32& Hour, int32& Monute) const
+	void GetConfig(int32& WeekDay, int32& Hour, int32& Minute) const
 	{
-		WeekDay = Ticks / FXD_GameTime::TicksPerDay;
-		Hour = (Ticks - WeekDay * FXD_GameTime::TicksPerDay) / FXD_GameTime::TicksPerHour;
-		Monute = (Ticks - Hour * FXD_GameTime::TicksPerHour) / FXD_GameTime::TicksPerMinute;
+		WeekDay = Ticks / FXD_GameTimeConfig::TicksPerDay;
+		Hour = (Ticks - WeekDay * FXD_GameTimeConfig::TicksPerDay) / FXD_GameTimeConfig::TicksPerHour;
+		Minute = (Ticks - Hour * FXD_GameTimeConfig::TicksPerHour) / FXD_GameTimeConfig::TicksPerMinute;
 	}
 
+	void GetConfig(EXD_DayOfWeek& WeekDay, int32& Hour, int32& Minute) const
+	{
+		WeekDay = static_cast<EXD_DayOfWeek>(Ticks / FXD_GameTimeConfig::TicksPerDay);
+		Hour = (Ticks - static_cast<uint8>(WeekDay) * FXD_GameTimeConfig::TicksPerDay) / FXD_GameTimeConfig::TicksPerHour;
+		Minute = (Ticks - Hour * FXD_GameTimeConfig::TicksPerHour) / FXD_GameTimeConfig::TicksPerMinute;
+	}
+
+private:
 	UPROPERTY()
 	int32 Ticks;
 };
 
-USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_TimeSystemFunctionLibrary.MakeEveryMonthConfig", HasNativeBreak = "XD_TimeSystemFunctionLibrary.BreakEveryMonthConfig"))
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeEveryMonthConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakEveryMonthConfig"))
 struct XD_TIMESYSTEM_API FXD_EveryMonthConfig
 {
 	GENERATED_BODY()
 public:
 	FXD_EveryMonthConfig() = default;
 
-	FXD_EveryMonthConfig(int32 Day, int32 Hour, int32 Monute)
-		:Ticks(Day * FXD_GameTime::TicksPerDay + Hour * FXD_GameTime::TicksPerHour + Monute * FXD_GameTime::TicksPerMinute)
+	FXD_EveryMonthConfig(int32 Day, int32 Hour, int32 Minute)
+		:Ticks(Day * FXD_GameTimeConfig::TicksPerDay + Hour * FXD_GameTimeConfig::TicksPerHour + Minute * FXD_GameTimeConfig::TicksPerMinute)
 	{}
 
 	bool operator==(const FXD_EveryMonthConfig& EveryMonthParam) const
@@ -382,11 +419,11 @@ public:
 		return Ticks == EveryMonthParam.Ticks;
 	}
 
-	void GetConfig(int32& Day, int32& Hour, int32& Monute) const
+	void GetConfig(int32& Day, int32& Hour, int32& Minute) const
 	{
-		Day = Ticks / FXD_GameTime::TicksPerDay;
-		Hour = (Ticks - Day * FXD_GameTime::TicksPerDay) / FXD_GameTime::TicksPerHour;
-		Monute = (Ticks - Hour * FXD_GameTime::TicksPerHour) / FXD_GameTime::TicksPerMinute;
+		Day = Ticks / FXD_GameTimeConfig::TicksPerDay;
+		Hour = (Ticks - Day * FXD_GameTimeConfig::TicksPerDay) / FXD_GameTimeConfig::TicksPerHour;
+		Minute = (Ticks - Hour * FXD_GameTimeConfig::TicksPerHour) / FXD_GameTimeConfig::TicksPerMinute;
 	}
 
 	friend uint32 GetTypeHash(const FXD_EveryMonthConfig& EveryMonthParam)
@@ -394,6 +431,78 @@ public:
 		return GetTypeHash(EveryMonthParam.Ticks);
 	}
 
+private:
 	UPROPERTY()
 	int32 Ticks;
 };
+
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeEveryYearConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakEveryYearConfig"))
+struct XD_TIMESYSTEM_API FXD_EveryYearConfig
+{
+	GENERATED_BODY()
+public:
+	FXD_EveryYearConfig() = default;
+
+	FXD_EveryYearConfig(int32 Month, int32 Day, int32 Hour, int32 Minute)
+		:Month(Month), Ticks(Day * FXD_GameTimeConfig::TicksPerDay + Hour * FXD_GameTimeConfig::TicksPerHour + Minute * FXD_GameTimeConfig::TicksPerMinute)
+	{}
+
+	bool operator==(const FXD_EveryYearConfig& EveryYearConfig) const
+	{
+		return Month == EveryYearConfig.Month && Ticks == EveryYearConfig.Ticks;
+	}
+
+	void GetConfig(int32& Month, int32& Day, int32& Hour, int32& Minute) const
+	{
+		Month = this->Month;
+		Day = Ticks / FXD_GameTimeConfig::TicksPerDay;
+		Hour = (Ticks - Day * FXD_GameTimeConfig::TicksPerDay) / FXD_GameTimeConfig::TicksPerHour;
+		Minute = (Ticks - Hour * FXD_GameTimeConfig::TicksPerHour) / FXD_GameTimeConfig::TicksPerMinute;
+	}
+
+	friend uint32 GetTypeHash(const FXD_EveryYearConfig& EveryYearConfig)
+	{
+		return HashCombine(GetTypeHash(EveryYearConfig.Month), GetTypeHash(EveryYearConfig.Ticks));
+	}
+
+private:
+	UPROPERTY()
+	uint8 Month;
+
+	UPROPERTY()
+	int32 Ticks;
+};
+
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeSpecialTimeConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakSpecialTimeConfig"))
+struct XD_TIMESYSTEM_API FXD_SpecialTimeConfig
+{
+	GENERATED_BODY()
+public:
+	FXD_SpecialTimeConfig() = default;
+
+	FXD_SpecialTimeConfig(int32 Year, int32 Month, int32 Day, int32 Hour, int32 Minute)
+		:SpecialTime(Year, Month, Day, Hour, Minute)
+	{}
+
+	bool operator==(const FXD_SpecialTimeConfig& SpecialTimeConfig) const
+	{
+		return SpecialTime == SpecialTimeConfig.SpecialTime;
+	}
+
+	void GetConfig(int32& Year, int32& Month, int32& Day, int32& Hour, int32& Minute) const
+	{
+		SpecialTime.GetDate(Year, Month, Day);
+		Hour = SpecialTime.GetHour();
+		Minute = SpecialTime.GetMinute();
+	}
+
+	friend uint32 GetTypeHash(const FXD_SpecialTimeConfig& SpecialTimeConfig)
+	{
+		return GetTypeHash(SpecialTimeConfig.SpecialTime);
+	}
+
+private:
+	UPROPERTY()
+	FXD_GameTime SpecialTime;
+};
+
