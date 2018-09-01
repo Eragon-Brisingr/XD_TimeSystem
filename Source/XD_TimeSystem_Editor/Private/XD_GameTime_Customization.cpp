@@ -12,6 +12,9 @@
 
 #define LOCTEXT_NAMESPACE "XD_TimeSystem_Editor"
 
+constexpr float HorizontolPadding = 5.f;
+constexpr float VerticalPadding = 0.f;
+
 TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> StructPropertyHandle)
 {
 	return SNew(SHorizontalBox)
@@ -23,7 +26,7 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 					.Text(LOCTEXT("年", "年"))
 			]
 			+ SHorizontalBox::Slot()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				.AutoWidth()
 			[
 				SNew(SNumericEntryBox<int32>)
@@ -57,7 +60,7 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 				]
 			+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 			[
 				SNew(SNumericEntryBox<int32>)
 					.AllowSpin(true)
@@ -89,7 +92,7 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 						.Text(LOCTEXT("日", "日"))
 				]
 			+ SHorizontalBox::Slot()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				.AutoWidth()
 			[
 				SNew(SNumericEntryBox<int32>)
@@ -135,7 +138,7 @@ TSharedRef<SWidget> CreateGameTimeBodyView(TSharedRef<class IPropertyHandle> Str
 					.Text(LOCTEXT("时", "时"))
 			]
 			+ SHorizontalBox::Slot()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				.AutoWidth()
 			[
 				SNew(SNumericEntryBox<int32>)
@@ -169,7 +172,7 @@ TSharedRef<SWidget> CreateGameTimeBodyView(TSharedRef<class IPropertyHandle> Str
 				]
 			+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 			[
 				SNew(SNumericEntryBox<int32>)
 					.AllowSpin(true)
@@ -201,7 +204,7 @@ TSharedRef<SWidget> CreateGameTimeBodyView(TSharedRef<class IPropertyHandle> Str
 						.Text(LOCTEXT("秒", "秒"))
 				]
 			+ SHorizontalBox::Slot()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				.AutoWidth()
 			[
 				SNew(SNumericEntryBox<int32>)
@@ -272,7 +275,7 @@ void FXD_EveryHourConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -319,7 +322,7 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -355,7 +358,7 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -421,7 +424,7 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(STextComboBox)
 						.OptionsSource(&WeekEnumNameList)
@@ -448,7 +451,7 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -484,7 +487,7 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -534,7 +537,7 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -570,7 +573,7 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -606,7 +609,7 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -656,7 +659,7 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -692,7 +695,7 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -728,7 +731,7 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
@@ -764,7 +767,7 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(5.f, 0.f, 5.f, 0.f)
+				.Padding(HorizontolPadding, VerticalPadding).VAlign(VAlign_Center)
 				[
 					SNew(SNumericEntryBox<int32>)
 						.AllowSpin(true)
