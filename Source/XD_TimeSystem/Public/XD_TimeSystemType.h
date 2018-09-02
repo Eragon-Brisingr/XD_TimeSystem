@@ -37,7 +37,9 @@ struct XD_TIMESYSTEM_API FXD_GameTime
 
 	friend class UXD_GameTimeTypeFunctionLibrary;
 public:
-	FXD_GameTime() = default;
+	FXD_GameTime()
+		:FXD_GameTime(1000, 1, 1, 0, 0, 0, 0)
+	{}
 	FXD_GameTime(int64 InTicks) : DateTime(InTicks) {}
 	FXD_GameTime(int32 Year, int32 Month, int32 Day, int32 Hour, int32 Minute, int32 Second = 0, int32 Millisecond = 0)
 		:DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond) {}
@@ -425,7 +427,7 @@ public:
 	}
 
 private:
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	int32 Ticks;
 };
 
@@ -436,7 +438,9 @@ struct XD_TIMESYSTEM_API FXD_EveryMonthConfig
 
 	friend struct FXD_GameTime;
 public:
-	FXD_EveryMonthConfig() = default;
+	FXD_EveryMonthConfig()
+		:FXD_EveryMonthConfig(1, 0, 0)
+	{}
 
 	FXD_EveryMonthConfig(int32 Day, int32 Hour, int32 Minute)
 		:Ticks(Day * FXD_GameTimeConfig::TicksPerDay + Hour * FXD_GameTimeConfig::TicksPerHour + Minute * FXD_GameTimeConfig::TicksPerMinute)
@@ -471,7 +475,9 @@ struct XD_TIMESYSTEM_API FXD_EveryYearConfig
 
 	friend struct FXD_GameTime;
 public:
-	FXD_EveryYearConfig() = default;
+	FXD_EveryYearConfig()
+		:FXD_EveryYearConfig(1, 1, 0, 0)
+	{}
 
 	FXD_EveryYearConfig(int32 Month, int32 Day, int32 Hour, int32 Minute)
 		:Month(Month), Ticks(Day * FXD_GameTimeConfig::TicksPerDay + Hour * FXD_GameTimeConfig::TicksPerHour + Minute * FXD_GameTimeConfig::TicksPerMinute)
@@ -509,7 +515,9 @@ struct XD_TIMESYSTEM_API FXD_SpecialTimeConfig
 	GENERATED_BODY()
 
 public:
-	FXD_SpecialTimeConfig() = default;
+	FXD_SpecialTimeConfig()
+		:FXD_SpecialTimeConfig(1000, 1, 1, 0, 0)
+	{}
 
 	FXD_SpecialTimeConfig(int32 Year, int32 Month, int32 Day, int32 Hour, int32 Minute)
 		:SpecialTime(Year, Month, Day, Hour, Minute)
