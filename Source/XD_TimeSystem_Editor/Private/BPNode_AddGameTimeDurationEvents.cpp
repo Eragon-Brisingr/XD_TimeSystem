@@ -172,6 +172,7 @@ void UBPNode_AddGameTimeDurationEvents::AddEvent_Impl(int32 Idx)
 {
 	FCreatePinParams InTextPinCreatePinParams;
 	InTextPinCreatePinParams.bIsReference = true;
+	InTextPinCreatePinParams.bIsConst = true;
 
 	StartPins.Add(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, GameTimeConfigType, GetStartPinName(Idx), InTextPinCreatePinParams));
 
