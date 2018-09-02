@@ -41,6 +41,11 @@ bool FXD_GameTime::InSpecialTimeRange(const FXD_SpecialTimeConfig& StartTime, co
 	return StartTime.SpecialTime < EndTime.SpecialTime ? *this >= StartTime.SpecialTime && *this < EndTime.SpecialTime : false;
 }
 
+float FXD_GameTime::GetRateInDay() const
+{
+	return float(GetTicks() % TicksPerDay) / TicksPerDay;
+}
+
 FText FXD_GameTime::ToText() const
 {
 	int32 Year, Month, Day, Hour, Minute, Second, Millisecond;

@@ -77,6 +77,10 @@ public:
 	bool InYearRange(const FXD_EveryYearConfig& StartTime, const FXD_EveryYearConfig& EndTime) const;
 
 	bool InSpecialTimeRange(const FXD_SpecialTimeConfig& StartTime, const FXD_SpecialTimeConfig& EndTime) const;
+
+public:
+	float GetRateInDay() const;
+
 public:
 	FXD_GameTime operator+(const FTimespan& Other) const
 	{

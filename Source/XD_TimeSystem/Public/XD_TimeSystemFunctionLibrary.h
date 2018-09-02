@@ -66,6 +66,13 @@ public:
 	}
 
 public:
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	static float GetRateInDay(const FXD_GameTime& GameTime)
+	{
+		return GameTime.GetRateInDay();
+	}
+
+public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GameTime + Timespan", CompactNodeTitle = "+", Keywords = "+ add plus"), Category = "游戏|时间")
 	static FXD_GameTime Add_GameTimeTimeSpan(const FXD_GameTime& GameTime, const FTimespan& Other)
 	{
