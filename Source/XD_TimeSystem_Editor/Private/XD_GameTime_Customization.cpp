@@ -285,19 +285,19 @@ void FXD_EveryHourConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.MaxValue(FXD_GameTime::MaxValue().GetMinute())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetMinute())
 						.Delta(1)
-						.MinDesiredValueWidth(80.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
-						.Value_Lambda([=]()
-						{
-							FXD_EveryHourConfig EveryHourConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryHourConfig>(StructPropertyHandle);
-							int32 Minute;
-							EveryHourConfig.GetConfig(Minute);
-							return TOptional<int32>(Minute);
-						})
-						.OnValueChanged_Lambda([=](int Value)
-						{
-							FPropertyCustomizeHelper::SetStructValue(StructPropertyHandle, FXD_EveryHourConfig(Value));
-						})
+ 						.Value_Lambda([=]()
+ 						{
+ 							FXD_EveryHourConfig EveryHourConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryHourConfig>(StructPropertyHandle);
+ 							int32 Minute;
+ 							EveryHourConfig.GetConfig(Minute);
+ 							return TOptional<int32>(Minute);
+ 						})
+ 						.OnValueChanged_Lambda([=](int Value)
+ 						{
+ 							FPropertyCustomizeHelper::SetStructValue(StructPropertyHandle, FXD_EveryHourConfig(Value));
+ 						})
 				]
 		];
 }
@@ -332,7 +332,7 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 						.MaxValue(FXD_GameTime::MaxValue().GetHour())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetHour())
 						.Delta(1)
-						.MinDesiredValueWidth(80.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
@@ -368,7 +368,7 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 						.MaxValue(FXD_GameTime::MaxValue().GetMinute())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetMinute())
 						.Delta(1)
-						.MinDesiredValueWidth(80.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
@@ -461,7 +461,7 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.MaxValue(FXD_GameTime::MaxValue().GetHour())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetHour())
 						.Delta(1)
-						.MinDesiredValueWidth(60.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
@@ -497,7 +497,7 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.MaxValue(FXD_GameTime::MaxValue().GetMinute())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetMinute())
 						.Delta(1)
-						.MinDesiredValueWidth(60.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
@@ -547,7 +547,7 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 						.MaxValue(31)
 						.MaxSliderValue(31)
 						.Delta(1)
-						.MinDesiredValueWidth(60.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
@@ -583,7 +583,7 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 						.MaxValue(FXD_GameTime::MaxValue().GetHour())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetHour())
 						.Delta(1)
-						.MinDesiredValueWidth(60.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
@@ -619,7 +619,7 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 						.MaxValue(FXD_GameTime::MaxValue().GetMinute())
 						.MaxSliderValue(FXD_GameTime::MaxValue().GetMinute())
 						.Delta(1)
-						.MinDesiredValueWidth(60.0f)
+						.MinDesiredValueWidth(30.0f)
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
