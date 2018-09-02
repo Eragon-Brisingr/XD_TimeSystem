@@ -39,6 +39,10 @@ public class XD_TimeSystem_Editor : ModuleRules
 				"Slate",
 				"SlateCore",
                 "InputCore",
+                "GraphEditor",
+                "BlueprintGraph",
+                "KismetCompiler",
+                "UnrealEd",
 
                 "XD_TimeSystem",
                 "XD_UnrealLibraryEx",

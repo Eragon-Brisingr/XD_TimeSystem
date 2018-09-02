@@ -57,11 +57,11 @@ void UXD_TimeManagerFunctionLibrary::AddEveryDayEvent_Instant(const FXD_EveryDay
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddEveryWeekEvent_Instant(EveryWeekDayConfig, EveryWeekDayEvent);
+		TimeManager->AddEveryWeekEvent_Instant(EveryWeekConfig, EveryWeekDayEvent);
 	}
 }
 
@@ -105,11 +105,11 @@ void UXD_TimeManagerFunctionLibrary::RemoveEveryDayEvent(const FXD_EveryDayConfi
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->RemoveEveryWeekDayEvent(EveryWeekDayConfig, EveryWeekDayEvent);
+		TimeManager->RemoveEveryWeekDayEvent(EveryWeekConfig, EveryWeekDayEvent);
 	}
 }
 
@@ -155,11 +155,11 @@ bool UXD_TimeManagerFunctionLibrary::ContainsEveryDayEvent(const FXD_EveryDayCon
 	return false;
 }
 
-bool UXD_TimeManagerFunctionLibrary::ContainsEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
+bool UXD_TimeManagerFunctionLibrary::ContainsEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		return TimeManager->ContainsEveryWeekEvent(EveryWeekDayConfig, EveryWeekDayEvent);
+		return TimeManager->ContainsEveryWeekEvent(EveryWeekConfig, EveryWeekDayEvent);
 	}
 	return false;
 }
@@ -191,43 +191,43 @@ bool UXD_TimeManagerFunctionLibrary::ContainsSpecialTimeEvent(const FXD_SpecialT
 	return false;
 }
 
-void UXD_TimeManagerFunctionLibrary::AddEveryHourEvent_Duration(const FXD_EveryHourConfig& Start, const FXD_EveryHourConfig& End, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddEveryHourEvent_Duration(const FXD_EveryHourConfig& Start, const FXD_EveryHourConfig& End, const FXD_GameTimeEvent& Event, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddEveryHourEvent_Duration(Start, End, EveryHourEvent);
+		TimeManager->AddEveryHourEvent_Duration(Start, End, Event);
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& Event, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddEveryDayEvent_Duration(Start, End, EveryHourEvent);
+		TimeManager->AddEveryDayEvent_Duration(Start, End, Event);
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& Event, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddEveryWeekEvent_Duration(Start, End, EveryHourEvent);
+		TimeManager->AddEveryWeekEvent_Duration(Start, End, Event);
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& Event, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddEveryMonthEvent_Duration(Start, End, EveryHourEvent);
+		TimeManager->AddEveryMonthEvent_Duration(Start, End, Event);
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& Event, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddEveryYearEvent_Duration(Start, End, EveryHourEvent);
+		TimeManager->AddEveryYearEvent_Duration(Start, End, Event);
 	}
 }
 

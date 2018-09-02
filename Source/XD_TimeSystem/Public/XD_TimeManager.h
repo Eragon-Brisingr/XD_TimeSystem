@@ -67,7 +67,7 @@ public:
 	void AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent);
 	
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
+	void AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent);
@@ -85,7 +85,7 @@ public:
 	void RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent);
 	
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void RemoveEveryWeekDayEvent(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
+	void RemoveEveryWeekDayEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void RemoveEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent);
@@ -103,7 +103,7 @@ public:
 	bool ContainsEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	bool ContainsEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekDayConfig, const FXD_GameTimeEvent& EveryWeekDayEvent) const;
+	bool ContainsEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent) const;
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	bool ContainsEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent) const;
