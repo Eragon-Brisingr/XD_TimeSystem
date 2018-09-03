@@ -193,18 +193,21 @@ void UXD_TimeManager::AddDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const 
 
 UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContextObject)
 {
-	AGameStateBase* GameState = WorldContextObject->GetWorld()->GetGameState();
-	if (GameState->Implements<UXD_TimeSystem_GameStateInterface>())
+	if (AGameStateBase* GameState = WorldContextObject->GetWorld()->GetGameState())
 	{
-		return IXD_TimeSystem_GameStateInterface::Execute_GetGameTimeManager(GameState);
+		if (GameState->Implements<UXD_TimeSystem_GameStateInterface>())
+		{
+			return IXD_TimeSystem_GameStateInterface::Execute_GetGameTimeManager(GameState);
+		}
+		else if (UXD_TimeManager* TimeManager = GameState->FindComponentByClass<UXD_TimeManager>())
+		{
+			TimeSystem_Warning_LOG("请在GameState继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
+			return TimeManager;
+		}
+		TimeSystem_Warning_LOG("请在GameState中添加TimeManager组件，并继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
+		return UXD_ActorFunctionLibrary::AddComponent<UXD_TimeManager>(GameState, TEXT("临时时间系统"));
 	}
-	else if (UXD_TimeManager* TimeManager = GameState->FindComponentByClass<UXD_TimeManager>())
-	{
-		TimeSystem_Warning_LOG("请在GameState继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
-		return TimeManager;
-	}
-	TimeSystem_Warning_LOG("请在GameState中添加TimeManager组件，并继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
-	return UXD_ActorFunctionLibrary::AddComponent<UXD_TimeManager>(GameState, TEXT("临时时间系统"));
+	return nullptr;
 }
 
 void UXD_TimeManager::AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)

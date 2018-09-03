@@ -159,4 +159,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
+
 };

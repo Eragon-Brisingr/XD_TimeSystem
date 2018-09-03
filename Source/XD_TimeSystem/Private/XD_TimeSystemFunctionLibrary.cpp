@@ -41,6 +41,15 @@ FXD_GameTime UXD_TimeManagerFunctionLibrary::GetGameTime(const UObject* WorldCon
 	return {};
 }
 
+float UXD_TimeManagerFunctionLibrary::GetGameTimeSpendRate(const UObject* WorldContextObject)
+{
+	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+	{
+		return TimeManager->TimeSpendRate;
+	}
+	return 0.f;
+}
+
 void UXD_TimeManagerFunctionLibrary::AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))

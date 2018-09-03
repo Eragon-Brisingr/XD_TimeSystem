@@ -385,8 +385,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject", CallableWithoutWorldContext))
 	static class UXD_TimeManager* GetGameTimeManager(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "CurGameTime"))
 	static FXD_GameTime GetGameTime(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "TimeSpendRate"))
+	static float GetGameTimeSpendRate(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
