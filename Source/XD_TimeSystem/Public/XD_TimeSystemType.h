@@ -30,6 +30,101 @@ enum class EXD_DayOfWeek : uint8
 	Sunday UMETA(DisplayName = "周日")
 };
 
+USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeGameTimeSpan", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakGameTimeSpan"))
+struct XD_TIMESYSTEM_API FXD_GameTimeSpan
+{
+	GENERATED_BODY()
+
+	friend struct FXD_GameTime;
+public:
+	FXD_GameTimeSpan() = default;
+
+	FXD_GameTimeSpan(int64 Ticks)
+		:Timespan(Ticks)
+	{}
+
+	FXD_GameTimeSpan(int32 Days, int32 Hours, int32 Minutes, int32 Seconds = 0, int32 FractionNano = 0)
+		:Timespan(Days, Hours, Minutes, Seconds, FractionNano)
+	{}
+
+	int64 GetTicks() const
+	{
+		return Timespan.GetTicks();
+	}
+
+	int32 GetDays() const
+	{
+		return Timespan.GetDays();
+	}
+
+	int32 GetHours() const
+	{
+		return Timespan.GetHours();
+	}
+
+	int32 GetMinutes() const
+	{
+		return Timespan.GetMinutes();
+	}
+
+	int32 GetSeconds() const
+	{
+		return Timespan.GetSeconds();
+	}
+
+	FXD_GameTimeSpan GetDuration() const
+	{
+		return FXD_GameTimeSpan(Timespan);
+	}
+
+	double GetTotalDays() const
+	{
+		return Timespan.GetTotalDays();
+	}
+
+	double GetTotalHours() const
+	{
+		return Timespan.GetTotalHours();
+	}
+
+	double GetTotalMinutes() const
+	{
+		return Timespan.GetTotalMinutes();
+	}
+
+	double GetTotalSeconds() const
+	{
+		return Timespan.GetTotalSeconds();
+	}
+
+	static FXD_GameTimeSpan FromDays(double Days)
+	{
+		return FXD_GameTimeSpan(FTimespan::FromDays(Days));
+	}
+
+	static FXD_GameTimeSpan FromHours(double Hours)
+	{
+		return FXD_GameTimeSpan(FTimespan::FromHours(Hours));
+	}
+
+	static FXD_GameTimeSpan FromMinutes(double Minutes)
+	{
+		return FXD_GameTimeSpan(FTimespan::FromMinutes(Minutes));
+	}
+
+	static FXD_GameTimeSpan FromSeconds(double Seconds)
+	{
+		return FXD_GameTimeSpan(FTimespan::FromSeconds(Seconds));
+	}
+private:
+	FXD_GameTimeSpan(FTimespan Timespan)
+		:Timespan(Timespan)
+	{}
+
+	UPROPERTY(SaveGame)
+	FTimespan Timespan;
+};
+
 USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeGameTime", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakGameTime"))
 struct XD_TIMESYSTEM_API FXD_GameTime
 {
@@ -82,28 +177,28 @@ public:
 	float GetRateInDay() const;
 
 public:
-	FXD_GameTime operator+(const FTimespan& Other) const
+	FXD_GameTime operator+(const FXD_GameTimeSpan& Other) const
 	{
 		return FXD_GameTime(DateTime.GetTicks() + Other.GetTicks());
 	}
 
-	FXD_GameTime& operator+=(const FTimespan& Other)
+	FXD_GameTime& operator+=(const FXD_GameTimeSpan& Other)
 	{
 		DateTime += Other.GetTicks();
 		return *this;
 	}
 
-	FTimespan operator-(const FXD_GameTime& Other) const
+	FXD_GameTimeSpan operator-(const FXD_GameTime& Other) const
 	{
-		return FTimespan(GetTicks() - Other.GetTicks());
+		return FXD_GameTimeSpan(GetTicks() - Other.GetTicks());
 	}
 
-	FXD_GameTime operator-(const FTimespan& Other) const
+	FXD_GameTime operator-(const FXD_GameTimeSpan& Other) const
 	{
 		return FXD_GameTime(DateTime.GetTicks() - Other.GetTicks());
 	}
 
-	FXD_GameTime& operator-=(const FTimespan& Other)
+	FXD_GameTime& operator-=(const FXD_GameTimeSpan& Other)
 	{
 		DateTime -= Other.GetTicks();
 		return *this;
@@ -246,7 +341,7 @@ public:
 		return DateTime.GetTicks(); 
 	}
 
-	FTimespan GetTimeOfDay() const
+	FXD_GameTimeSpan GetTimeOfDay() const
 	{
 		return DateTime.GetTimeOfDay();
 	}

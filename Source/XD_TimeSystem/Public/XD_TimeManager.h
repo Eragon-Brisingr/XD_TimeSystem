@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "XD_SaveGameInterface.h"
 #include "XD_TimeSystemType.h"
+#include <Engine/LatentActionManager.h>
 #include "XD_TimeManager.generated.h"
 
 
@@ -14,6 +15,7 @@ class XD_TIMESYSTEM_API UXD_TimeManager : public UActorComponent, public IXD_Sav
 {
 	GENERATED_BODY()
 
+	friend class UXD_TimeManagerFunctionLibrary;
 public:	
 	// Sets default values for this component's properties
 	UXD_TimeManager();
@@ -57,6 +59,31 @@ public:
 		}
 	}
 
+	//GameTimeDelay
+private:
+	struct FGameTimeDelayAction
+	{
+		FGameTimeDelayAction(const FXD_GameTimeSpan& GameTimeSpan, FName ExecutionFunction, int32 OutputLink)
+			:TicksRemaining(GameTimeSpan.GetTicks()), ExecutionFunction(ExecutionFunction), OutputLink(OutputLink)
+		{}
+
+		int64 TicksRemaining;
+		FName ExecutionFunction;
+		int32 OutputLink;
+
+		bool operator==(const FGameTimeDelayAction& Action)
+		{
+			return OutputLink == Action.OutputLink;
+		}
+	};
+
+	TMap<TWeakObjectPtr<UObject>, TArray<FGameTimeDelayAction>> GameTimeDelayEvents;
+
+	FGameTimeDelayAction* FindDelayEvent(const FLatentActionInfo& LatentInfo);
+
+	bool ContainsDelayEvent(const FLatentActionInfo& LatentInfo);
+
+	void AddDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FLatentActionInfo& LatentInfo);
 public:
 	static UXD_TimeManager* GetGameTimeManager(const UObject* WorldContextObject);
 

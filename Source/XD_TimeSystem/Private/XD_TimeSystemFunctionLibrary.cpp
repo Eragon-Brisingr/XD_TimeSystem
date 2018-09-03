@@ -239,4 +239,50 @@ void UXD_TimeManagerFunctionLibrary::AddSpecialTimeEvent_Duration(const FXD_Spec
 	}
 }
 
+void UXD_TimeManagerFunctionLibrary::GameTimeDelay(const UObject* WorldContextObject, const FXD_GameTimeSpan& TimeSpan, FLatentActionInfo LatentInfo)
+{
+	if (TimeSpan.GetTicks() > 0)
+	{
+		if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+		{
+			if (!TimeManager->ContainsDelayEvent(LatentInfo))
+			{
+				TimeManager->AddDelayEvent(TimeSpan, LatentInfo);
+			}
+		}
+	}
+	else if (LatentInfo.CallbackTarget)
+	{
+		if (UFunction* TargetFunction = LatentInfo.CallbackTarget->FindFunction(LatentInfo.ExecutionFunction))
+		{
+			LatentInfo.CallbackTarget->ProcessEvent(TargetFunction, &(LatentInfo.Linkage));
+		}
+	}
+}
+
+void UXD_TimeManagerFunctionLibrary::GameTimeRetriggerableDelay(const UObject* WorldContextObject, const FXD_GameTimeSpan& TimeSpan, FLatentActionInfo LatentInfo)
+{
+	if (TimeSpan.GetTicks() > 0)
+	{
+		if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+		{
+			if (UXD_TimeManager::FGameTimeDelayAction* Action = TimeManager->FindDelayEvent(LatentInfo))
+			{
+				Action->TicksRemaining = TimeSpan.GetTicks();
+			}
+			else
+			{
+				TimeManager->AddDelayEvent(TimeSpan, LatentInfo);
+			}
+		}
+	}
+	else if (LatentInfo.CallbackTarget)
+	{
+		if (UFunction* TargetFunction = LatentInfo.CallbackTarget->FindFunction(LatentInfo.ExecutionFunction))
+		{
+			LatentInfo.CallbackTarget->ProcessEvent(TargetFunction, &(LatentInfo.Linkage));
+		}
+	}
+}
+
 #undef LOCTEXT_NAMESPACE

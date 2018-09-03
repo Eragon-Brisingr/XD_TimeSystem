@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XD_TimeSystemType.h"
+#include <Engine/LatentActionManager.h>
 #include "XD_TimeSystemFunctionLibrary.generated.h"
 
 /**
@@ -73,20 +74,88 @@ public:
 	}
 
 public:
+	UFUNCTION(BlueprintPure, Category = "游戏|时间", meta = (NativeMakeFunc))
+	static FXD_GameTimeSpan MakeGameTimeSpan(int32 Days, int32 Hours, int32 Minutes)
+	{
+		return FXD_GameTimeSpan(Days, Hours, Minutes);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间", meta = (NativeBreakFunc))
+	static void BreakGameTimeSpan(const FXD_GameTimeSpan& GameTimeSpan, int32& Days, int32& Hours, int32& Minutes)
+	{
+		Days = GameTimeSpan.GetDays();
+		Hours = GameTimeSpan.GetHours();
+		Minutes = GameTimeSpan.GetMinutes();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	int32 GetDays(const FXD_GameTimeSpan& GameTimeSpan) const
+	{
+		return GameTimeSpan.GetDays();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	int32 GetHours(const FXD_GameTimeSpan& GameTimeSpan) const
+	{
+		return GameTimeSpan.GetHours();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	int32 GetMinutes(const FXD_GameTimeSpan& GameTimeSpan) const
+	{
+		return GameTimeSpan.GetMinutes();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	float GetTotalDays(const FXD_GameTimeSpan& GameTimeSpan) const
+	{
+		return GameTimeSpan.GetTotalDays();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	float GetTotalHours(const FXD_GameTimeSpan& GameTimeSpan) const
+	{
+		return GameTimeSpan.GetTotalHours();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	float GetTotalMinutes(const FXD_GameTimeSpan& GameTimeSpan) const
+	{
+		return GameTimeSpan.GetTotalMinutes();
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	static FXD_GameTimeSpan FromDays(float Days)
+	{
+		return FXD_GameTimeSpan::FromDays(Days);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	static FXD_GameTimeSpan FromHours(float Hours)
+	{
+		return FXD_GameTimeSpan::FromHours(Hours);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间")
+	static FXD_GameTimeSpan FromMinutes(float Minutes)
+	{
+		return FXD_GameTimeSpan::FromMinutes(Minutes);
+	}
+public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GameTime + Timespan", CompactNodeTitle = "+", Keywords = "+ add plus"), Category = "游戏|时间")
-	static FXD_GameTime Add_GameTimeTimeSpan(const FXD_GameTime& GameTime, const FTimespan& Other)
+	static FXD_GameTime Add_GameTimeTimeSpan(const FXD_GameTime& GameTime, const FXD_GameTimeSpan& Other)
 	{
 		return GameTime + Other;
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GameTime - GameTime", CompactNodeTitle = "-", Keywords = "- subtract minus"), Category = "游戏|时间")
-	static FTimespan Subtract_GameTimeGameTime(const FXD_GameTime& A, const FXD_GameTime& B)
+	static FXD_GameTimeSpan Subtract_GameTimeGameTime(const FXD_GameTime& A, const FXD_GameTime& B)
 	{
 		return A - B;
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GameTime - Timespan", CompactNodeTitle = "-", Keywords = "- subtract minus"), Category = "游戏|时间")
-	static FXD_GameTime Subtract_GameTimeTimeSpan(const FXD_GameTime& GameTime, const FTimespan& Other)
+	static FXD_GameTime Subtract_GameTimeTimeSpan(const FXD_GameTime& GameTime, const FXD_GameTimeSpan& Other)
 	{
 		return GameTime - Other;
 	}
@@ -188,7 +257,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetTimeOfDay"), Category = "游戏|时间")
-	static FTimespan GetTimeOfDay(FXD_GameTime GameTime)
+	static FXD_GameTimeSpan GetTimeOfDay(FXD_GameTime GameTime)
 	{
 		return GameTime.GetTimeOfDay();
 	}
@@ -390,4 +459,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& Event, const UObject* WorldContextObject);
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo"))
+	static void GameTimeDelay(const UObject* WorldContextObject, const FXD_GameTimeSpan& TimeSpan, FLatentActionInfo LatentInfo);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo"))
+	static void GameTimeRetriggerableDelay(const UObject* WorldContextObject, const FXD_GameTimeSpan& TimeSpan, FLatentActionInfo LatentInfo);
 };

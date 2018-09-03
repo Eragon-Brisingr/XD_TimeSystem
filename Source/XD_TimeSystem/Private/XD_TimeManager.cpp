@@ -7,6 +7,7 @@
 #include <GameFramework/GameStateBase.h>
 #include "XD_GameTimeEventInterface.h"
 #include <EngineUtils.h>
+#include "XD_ActorFunctionLibrary.h"
 
 
 // Sets default values for this component's properties
@@ -107,11 +108,58 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 			//Special Time
 			{
-				if (TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(FXD_SpecialTimeConfig(InterpYear, InterpMonth, InterpDay, InterpHour, InterpMinute)))
+				FXD_SpecialTimeConfig SpecialTimeConfig = FXD_SpecialTimeConfig(InterpYear, InterpMonth, InterpDay, InterpHour, InterpMinute);
+				if (TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(SpecialTimeConfig))
 				{
 					InvokeExecuteGameTimeEvents(*Events);
+					//Delete Special Things
+					SpecialTimeEvents.Remove(SpecialTimeConfig);
 				}
 			}
+		}
+
+		//GameTimeDelay
+		TArray<TWeakObjectPtr<UObject>> UnvalidObjects;
+		for (TPair<TWeakObjectPtr<UObject>, TArray<FGameTimeDelayAction>>& TargetAndActions : GameTimeDelayEvents)
+		{
+			TWeakObjectPtr<UObject> CallbackTarget = TargetAndActions.Key;
+			TArray<FGameTimeDelayAction>& Actions = TargetAndActions.Value;
+			if (CallbackTarget.IsValid())
+			{
+				TArray<FGameTimeDelayAction> ExecutedActions;
+				for (FGameTimeDelayAction& Action : Actions)
+				{
+					Action.TicksRemaining -= (CurrentTime.GetTicks() - PreTicks);
+					if (Action.TicksRemaining <= 0)
+					{
+						ExecutedActions.Add(Action);
+					}
+				}
+
+				for (FGameTimeDelayAction& Action : ExecutedActions)
+				{
+					Actions.Remove(Action);
+					//遍历结束后才执行，防止遍历中添加事件改变Actions长度导致迭代器异常
+					if (UFunction* TargetFunction = CallbackTarget->FindFunction(Action.ExecutionFunction))
+					{
+						CallbackTarget->ProcessEvent(TargetFunction, &(Action.OutputLink));
+					}
+				}
+
+				if (ExecutedActions.Num() == GameTimeDelayEvents.Num())
+				{
+					UnvalidObjects.Add(CallbackTarget);
+				}
+			}
+			else
+			{
+				UnvalidObjects.Add(CallbackTarget);
+			}
+		}
+
+		for (TWeakObjectPtr<UObject>& NeedRemoveObject : UnvalidObjects)
+		{
+			GameTimeDelayEvents.Remove(NeedRemoveObject);
 		}
 	}
 }
@@ -122,6 +170,25 @@ void UXD_TimeManager::GetLifetimeReplicatedProps(TArray< class FLifetimeProperty
 
 	DOREPLIFETIME_CONDITION(UXD_TimeManager, CurrentTime, COND_InitialOnly);
 	DOREPLIFETIME(UXD_TimeManager, CurrentTime);
+}
+
+UXD_TimeManager::FGameTimeDelayAction* UXD_TimeManager::FindDelayEvent(const FLatentActionInfo& LatentInfo)
+{
+	if (TArray<FGameTimeDelayAction>* Actions = GameTimeDelayEvents.Find(LatentInfo.CallbackTarget))
+	{
+		return Actions->FindByPredicate([&](const FGameTimeDelayAction& E) {return E.OutputLink == LatentInfo.Linkage; });
+	}
+	return nullptr;
+}
+
+bool UXD_TimeManager::ContainsDelayEvent(const FLatentActionInfo& LatentInfo)
+{
+	return FindDelayEvent(LatentInfo) != nullptr;
+}
+
+void UXD_TimeManager::AddDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FLatentActionInfo& LatentInfo)
+{
+	GameTimeDelayEvents.FindOrAdd(LatentInfo.CallbackTarget).Add(FGameTimeDelayAction(GameTimeSpan, LatentInfo.ExecutionFunction, LatentInfo.Linkage));
 }
 
 UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContextObject)
@@ -137,7 +204,7 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 		return TimeManager;
 	}
 	TimeSystem_Warning_LOG("请在GameState中添加TimeManager组件，并继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
-	return nullptr;
+	return UXD_ActorFunctionLibrary::AddComponent<UXD_TimeManager>(GameState, TEXT("临时时间系统"));
 }
 
 void UXD_TimeManager::AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)
