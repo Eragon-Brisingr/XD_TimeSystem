@@ -393,7 +393,7 @@ void UXD_TimeManager::AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& 
 	{
 		EveryHourEvent.ExecuteIfBound();
 	}
-	else if (CurrentTime < Start.SpecialTime)
+	else if (CurrentTime.GetTicks() < Start.GetTicks())
 	{
 		AddSpecialTimeEvent_Instant(Start, EveryHourEvent);
 	}

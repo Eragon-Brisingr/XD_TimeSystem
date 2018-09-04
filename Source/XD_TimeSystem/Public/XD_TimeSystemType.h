@@ -121,7 +121,7 @@ private:
 		:Timespan(Timespan)
 	{}
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	FTimespan Timespan;
 };
 
@@ -141,7 +141,7 @@ public:
 
 private:
 	//使用FDateTime的实现，不使用继承否则没法SaveGame
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	FDateTime DateTime;
 public:
 	//100ns == 1Tick
@@ -446,7 +446,7 @@ public:
 	}
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, SaveGame)
 	int32 Ticks;
 };
 
@@ -480,7 +480,7 @@ public:
 	}
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, SaveGame)
 	int32 Ticks;
 };
 
@@ -526,7 +526,7 @@ public:
 	}
 
 private:
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	int32 Ticks;
 };
 
@@ -563,7 +563,7 @@ public:
 	}
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, SaveGame)
 	int32 Ticks;
 };
 
@@ -601,10 +601,10 @@ public:
 	}
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, SaveGame)
 	uint8 Month;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, SaveGame)
 	int32 Ticks;
 };
 
@@ -613,6 +613,7 @@ struct XD_TIMESYSTEM_API FXD_SpecialTimeConfig
 {
 	GENERATED_BODY()
 
+	friend class FXD_SpecialTimeConfig_Customization;
 public:
 	FXD_SpecialTimeConfig()
 		:FXD_SpecialTimeConfig(1000, 1, 1, 0, 0)
@@ -639,7 +640,12 @@ public:
 		return GetTypeHash(SpecialTimeConfig.SpecialTime);
 	}
 
-	UPROPERTY(EditAnywhere, Category = "时间系统")
+	int64 GetTicks() const
+	{
+		return SpecialTime.GetTicks();
+	}
+private:
+	UPROPERTY(EditAnywhere, Category = "时间系统", SaveGame)
 	FXD_GameTime SpecialTime;
 };
 

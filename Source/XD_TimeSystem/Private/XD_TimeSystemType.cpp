@@ -38,7 +38,7 @@ bool FXD_GameTime::InYearRange(const FXD_EveryYearConfig& StartTime, const FXD_E
 
 bool FXD_GameTime::InSpecialTimeRange(const FXD_SpecialTimeConfig& StartTime, const FXD_SpecialTimeConfig& EndTime) const
 {
-	return StartTime.SpecialTime < EndTime.SpecialTime ? *this >= StartTime.SpecialTime && *this < EndTime.SpecialTime : false;
+	return StartTime.GetTicks() < EndTime.GetTicks() ? GetTicks() >= StartTime.GetTicks() && GetTicks() < EndTime.GetTicks() : false;
 }
 
 float FXD_GameTime::GetRateInDay() const
