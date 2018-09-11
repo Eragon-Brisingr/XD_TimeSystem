@@ -31,6 +31,12 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray< class FLifetimeProperty > & OutLifetimeProps) const override;
 
 public:
+	static UXD_TimeManager* GetGameTimeManager(const UObject* WorldContextObject);
+
+#if WITH_EDITOR
+	static TWeakObjectPtr<UXD_TimeManager> PreviewTimeManager;
+#endif
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "时间系统", Replicated, SaveGame, meta = (DisplayName = "当前时间"))
 	FXD_GameTime CurrentTime;
 
@@ -85,8 +91,6 @@ private:
 
 	void AddDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FLatentActionInfo& LatentInfo);
 public:
-	static UXD_TimeManager* GetGameTimeManager(const UObject* WorldContextObject);
-
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent);
 

@@ -8,6 +8,8 @@
 #include "XD_GameTimeEventInterface.h"
 #include <EngineUtils.h>
 #include "XD_ActorFunctionLibrary.h"
+#include "XD_TimeManagerPreview.h"
+#include "XD_TimeSystemSettings.h"
 
 
 // Sets default values for this component's properties
@@ -172,6 +174,10 @@ void UXD_TimeManager::GetLifetimeReplicatedProps(TArray< class FLifetimeProperty
 	DOREPLIFETIME(UXD_TimeManager, CurrentTime);
 }
 
+#if WITH_EDITOR
+TWeakObjectPtr<UXD_TimeManager> UXD_TimeManager::PreviewTimeManager;
+#endif
+
 UXD_TimeManager::FGameTimeDelayAction* UXD_TimeManager::FindDelayEvent(const FLatentActionInfo& LatentInfo)
 {
 	if (TArray<FGameTimeDelayAction>* Actions = GameTimeDelayEvents.Find(LatentInfo.CallbackTarget))
@@ -193,7 +199,23 @@ void UXD_TimeManager::AddDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const 
 
 UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContextObject)
 {
-	if (AGameStateBase* GameState = WorldContextObject->GetWorld()->GetGameState())
+	UWorld* World = WorldContextObject->GetWorld();
+#if WITH_EDITOR
+	if (World->WorldType == EWorldType::Editor && World->TimeSeconds > 0.f)
+	{
+		if (PreviewTimeManager.IsValid())
+		{
+			return PreviewTimeManager.Get();
+		}
+		else if (TSubclassOf<AXD_TimeManagerPreviewActor> TimeManagerPreviewActorClass = GetDefault<UXD_TimeSystemSettings>()->TimeManagerPreviewActorClass)
+		{
+			return World->SpawnActor<AXD_TimeManagerPreviewActor>(TimeManagerPreviewActorClass)->PreviewTimeManager;
+		}
+		return nullptr;
+	}
+#endif
+
+	if (AGameStateBase* GameState = World->GetGameState())
 	{
 		if (GameState->Implements<UXD_TimeSystem_GameStateInterface>())
 		{
