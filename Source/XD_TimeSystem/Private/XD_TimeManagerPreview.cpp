@@ -12,6 +12,19 @@ AXD_TimeManagerPreviewActor::AXD_TimeManagerPreviewActor()
 	PreviewTimeManager = CreateDefaultSubobject<UXD_TimeManager>(GET_MEMBER_NAME_CHECKED(AXD_TimeManagerPreviewActor, PreviewTimeManager));
 }
 
+void AXD_TimeManagerPreviewActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors);
+	for (AActor* AttachedActor : AttachedActors)
+	{
+		AttachedActor->Destroy();
+	}
+	Destroy();
+}
+
 #if WITH_EDITOR
 void AXD_TimeManagerPreviewActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {

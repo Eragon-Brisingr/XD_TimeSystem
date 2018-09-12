@@ -19,11 +19,15 @@ public:
 	AXD_TimeManagerPreviewActor();
 
 protected:
+	virtual void BeginPlay() override;
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 public:
-	virtual bool ShouldTickIfViewportsOnly() const override { return true; }
+#if WITH_EDITOR
+	virtual bool ShouldTickIfViewportsOnly() const override { return !Pause; }
+#endif
 	virtual void TickActor(float DeltaSeconds, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 
 	// Called every frame
@@ -32,6 +36,11 @@ public:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 public:
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, Category = "环境系统", meta = (DisplayName = "暂停"))
+	uint8 Pause : 1;
+#endif
+
 	UPROPERTY(VisibleAnywhere, Category = "时间系统")
 	class UXD_TimeManager* PreviewTimeManager;
 	
