@@ -30,6 +30,16 @@ void AXD_TimeManagerPreviewActor::PostEditChangeProperty(FPropertyChangedEvent& 
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+
+bool AXD_TimeManagerPreviewActor::ShouldTickIfViewportsOnly() const
+{
+	if (UWorld* World = GetWorld())
+	{
+		return World->WorldType == EWorldType::Editor && !Pause;
+	}
+	return false;
+}
+
 #endif // WITH_EDITOR
 
 void AXD_TimeManagerPreviewActor::TickActor(float DeltaSeconds, ELevelTick TickType, FActorTickFunction& ThisTickFunction)

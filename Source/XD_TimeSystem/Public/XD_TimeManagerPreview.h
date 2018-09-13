@@ -26,7 +26,7 @@ protected:
 #endif
 public:
 #if WITH_EDITOR
-	virtual bool ShouldTickIfViewportsOnly() const override { return !Pause; }
+	virtual bool ShouldTickIfViewportsOnly() const override;
 #endif
 	virtual void TickActor(float DeltaSeconds, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 
