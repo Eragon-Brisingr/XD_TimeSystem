@@ -63,6 +63,16 @@ void AXD_TimeManagerPreviewActor::OnConstruction(const FTransform& Transform)
 	{
 #if WITH_EDITOR
 		UXD_TimeManager::PreviewTimeManager = PreviewTimeManager;
+
+		if (bIsTimeEventInited == false)
+		{
+			bIsTimeEventInited = true;
+
+			GetWorld()->GetTimerManager().SetTimerForNextTick([=] 
+			{
+				PreviewTimeManager->InitTimeEvents();
+			});
+		}
 #endif
 	}
 }

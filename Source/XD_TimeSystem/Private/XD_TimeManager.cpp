@@ -31,20 +31,16 @@ void UXD_TimeManager::BeginPlay()
 
 	// ...
 
-	for (TActorIterator<AActor> It(GetWorld(), AActor::StaticClass()); It; ++It)
-	{
-		AActor* Actor = *It;
-		if (!Actor->IsPendingKill())
-		{
-			IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
-		}
-	}
-	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Actor)
-	{
-		IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
-	}));
+	InitTimeEvents();
 }
 
+
+void UXD_TimeManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->RemoveOnActorSpawnedHandler(OnActorSpawnedHandle);
+}
 
 // Called every frame
 void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -60,6 +56,9 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	int64 SpendMinutes = CurMinutes - PreMinutes;
 	if (SpendMinutes > 0)
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		for (FXD_GameTime InterpGameTime((PreMinutes + 1) * FXD_GameTime::TicksPerMinute); InterpGameTime <= CurMinutes  * FXD_GameTime::TicksPerMinute; InterpGameTime += FXD_GameTime::TicksPerMinute)
 		{
 			int32 InterpYear, InterpMonth, InterpDay;
@@ -177,6 +176,28 @@ void UXD_TimeManager::GetLifetimeReplicatedProps(TArray< class FLifetimeProperty
 #if WITH_EDITOR
 TWeakObjectPtr<UXD_TimeManager> UXD_TimeManager::PreviewTimeManager;
 #endif
+
+void UXD_TimeManager::InitTimeEvents()
+{
+#if WITH_EDITOR
+	FEditorScriptExecutionGuard ScriptGuard;
+#endif
+	for (TActorIterator<AActor> It(GetWorld(), AActor::StaticClass()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->IsPendingKill())
+		{
+			IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+		}
+	}
+	OnActorSpawnedHandle = GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Actor)
+	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
+		IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+	}));
+}
 
 UXD_TimeManager::FGameTimeDelayAction* UXD_TimeManager::FindDelayEvent(const FLatentActionInfo& LatentInfo)
 {
@@ -368,6 +389,9 @@ void UXD_TimeManager::AddEveryHourEvent_Duration(const FXD_EveryHourConfig& Star
 {
 	if (CurrentTime.InHourRange(Start, End))
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		EveryHourEvent.ExecuteIfBound();
 	}
 	AddEveryHourEvent_Instant(Start, EveryHourEvent);
@@ -377,6 +401,9 @@ void UXD_TimeManager::AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start,
 {
 	if (CurrentTime.InDayRange(Start, End))
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		EveryHourEvent.ExecuteIfBound();
 	}
 	AddEveryDayEvent_Instant(Start, EveryHourEvent);
@@ -386,6 +413,9 @@ void UXD_TimeManager::AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Star
 {
 	if (CurrentTime.InWeekRange(Start, End))
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		EveryHourEvent.ExecuteIfBound();
 	}
 	AddEveryWeekEvent_Instant(Start, EveryHourEvent);
@@ -395,6 +425,9 @@ void UXD_TimeManager::AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& St
 {
 	if (CurrentTime.InMonthRange(Start, End))
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		EveryHourEvent.ExecuteIfBound();
 	}
 	AddEveryMonthEvent_Instant(Start, EveryHourEvent);
@@ -404,6 +437,9 @@ void UXD_TimeManager::AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Star
 {
 	if (CurrentTime.InYearRange(Start, End))
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		EveryHourEvent.ExecuteIfBound();
 	}
 	AddEveryYearEvent_Instant(Start, EveryHourEvent);
@@ -413,6 +449,9 @@ void UXD_TimeManager::AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& 
 {
 	if (CurrentTime.InSpecialTimeRange(Start, End))
 	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
 		EveryHourEvent.ExecuteIfBound();
 	}
 	else if (CurrentTime.GetTicks() < Start.GetTicks())

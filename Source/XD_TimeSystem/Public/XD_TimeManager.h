@@ -24,6 +24,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -56,6 +57,10 @@ public:
 	TMap<FXD_EveryYearConfig, TArray<FXD_GameTimeEvent>> EveryYearEvents;
 
 	TMap<FXD_SpecialTimeConfig, TArray<FXD_GameTimeEvent>> SpecialTimeEvents;
+
+	FDelegateHandle OnActorSpawnedHandle;
+
+	void InitTimeEvents();
 
 	void InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents)
 	{
