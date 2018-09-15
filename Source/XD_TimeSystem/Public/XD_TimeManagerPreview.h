@@ -33,9 +33,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-#if WITH_EDITORONLY_DATA
-	uint8 bIsTimeEventInited : 1;
-#endif
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 public:

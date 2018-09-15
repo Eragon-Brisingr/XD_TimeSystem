@@ -59,21 +59,11 @@ void AXD_TimeManagerPreviewActor::Tick(float DeltaTime)
 void AXD_TimeManagerPreviewActor::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+#if WITH_EDITOR
 	if (GetWorld()->WorldType == EWorldType::Editor)
 	{
-#if WITH_EDITOR
 		UXD_TimeManager::PreviewTimeManager = PreviewTimeManager;
-
-		if (bIsTimeEventInited == false)
-		{
-			bIsTimeEventInited = true;
-
-			GetWorld()->GetTimerManager().SetTimerForNextTick([=]
-			{
-				PreviewTimeManager->InitTimeEvents();
-			});
-		}
-#endif
 	}
+#endif
 }
 
