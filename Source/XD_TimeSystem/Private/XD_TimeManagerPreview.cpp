@@ -68,7 +68,7 @@ void AXD_TimeManagerPreviewActor::OnConstruction(const FTransform& Transform)
 		{
 			bIsTimeEventInited = true;
 
-			GetWorld()->GetTimerManager().SetTimerForNextTick([=] 
+			GetWorld()->GetTimerManager().SetTimerForNextTick([=]
 			{
 				PreviewTimeManager->InitTimeEvents();
 			});

@@ -35,6 +35,28 @@ void UXD_TimeManager::BeginPlay()
 }
 
 
+void UXD_TimeManager::InitTimeEvents()
+{
+#if WITH_EDITOR
+	FEditorScriptExecutionGuard ScriptGuard;
+#endif
+	for (TActorIterator<AActor> It(GetWorld(), AActor::StaticClass()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->IsPendingKill())
+		{
+			IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+		}
+	}
+	OnActorSpawnedHandle = GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Actor)
+	{
+#if WITH_EDITOR
+		FEditorScriptExecutionGuard ScriptGuard;
+#endif
+		IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+	}));
+}
+
 void UXD_TimeManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
@@ -177,28 +199,6 @@ void UXD_TimeManager::GetLifetimeReplicatedProps(TArray< class FLifetimeProperty
 TWeakObjectPtr<UXD_TimeManager> UXD_TimeManager::PreviewTimeManager;
 #endif
 
-void UXD_TimeManager::InitTimeEvents()
-{
-#if WITH_EDITOR
-	FEditorScriptExecutionGuard ScriptGuard;
-#endif
-	for (TActorIterator<AActor> It(GetWorld(), AActor::StaticClass()); It; ++It)
-	{
-		AActor* Actor = *It;
-		if (!Actor->IsPendingKill())
-		{
-			IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
-		}
-	}
-	OnActorSpawnedHandle = GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Actor)
-	{
-#if WITH_EDITOR
-		FEditorScriptExecutionGuard ScriptGuard;
-#endif
-		IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
-	}));
-}
-
 UXD_TimeManager::FGameTimeDelayAction* UXD_TimeManager::FindDelayEvent(const FLatentActionInfo& LatentInfo)
 {
 	if (TArray<FGameTimeDelayAction>* Actions = GameTimeDelayEvents.Find(LatentInfo.CallbackTarget))
@@ -227,6 +227,11 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 		if (PreviewTimeManager.IsValid())
 		{
 			return PreviewTimeManager.Get();
+		}
+		else if (AXD_TimeManagerPreviewActor* TimeManagerPreviewActor = *TActorIterator<AXD_TimeManagerPreviewActor>(World, GetDefault<UXD_TimeSystemSettings>()->TimeManagerPreviewActorClass))
+		{
+			PreviewTimeManager = TimeManagerPreviewActor->PreviewTimeManager;
+			return TimeManagerPreviewActor->PreviewTimeManager;
 		}
 		else if (TSubclassOf<AXD_TimeManagerPreviewActor> TimeManagerPreviewActorClass = GetDefault<UXD_TimeSystemSettings>()->TimeManagerPreviewActorClass)
 		{

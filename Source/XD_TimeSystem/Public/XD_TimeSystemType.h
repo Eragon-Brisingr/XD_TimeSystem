@@ -155,10 +155,7 @@ public:
 	static constexpr int64 TicksPerWeek = ETimespan::TicksPerWeek;
 
 private:
-	static bool InTimeRange(int64 CurTime, int64 StartTime, int64 EndTime)
-	{
-		return StartTime < EndTime ? CurTime >= StartTime && CurTime < EndTime : CurTime > StartTime || CurTime <= EndTime;
-	}
+	static bool InTimeRange(int64 CurTime, int64 StartTime, int64 EndTime);
 
 public:
 	bool InHourRange(const FXD_EveryHourConfig& StartTime, const FXD_EveryHourConfig& EndTime) const;
@@ -408,12 +405,14 @@ public:
 
 namespace FXD_GameTimeConfig
 {
+	static constexpr int64 Rate = FXD_GameTime::TicksPerSecond;
+
 	static constexpr int64 TicksPerDay = FXD_GameTime::TicksPerDay / FXD_GameTime::TicksPerSecond;
 	static constexpr int64 TicksPerHour = FXD_GameTime::TicksPerHour / FXD_GameTime::TicksPerSecond;
 	static constexpr int64 TicksPerMicrosecond = FXD_GameTime::TicksPerMicrosecond / FXD_GameTime::TicksPerSecond;
 	static constexpr int64 TicksPerMillisecond = FXD_GameTime::TicksPerMillisecond / FXD_GameTime::TicksPerSecond;
 	static constexpr int64 TicksPerMinute = FXD_GameTime::TicksPerMinute / FXD_GameTime::TicksPerSecond;
-	static constexpr int64 TicksPerSecond = FXD_GameTime::TicksPerSecond / FXD_GameTime::TicksPerSecond;
+	static constexpr int64 TicksPerSecond = FXD_GameTime::TicksPerSecond / Rate;
 	static constexpr int64 TicksPerWeek = FXD_GameTime::TicksPerWeek / FXD_GameTime::TicksPerSecond;
 };
 

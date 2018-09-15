@@ -5,19 +5,24 @@
 
 #define LOCTEXT_NAMESPACE "XD_TimeSystem"
 
+bool FXD_GameTime::InTimeRange(int64 CurTime, int64 StartTime, int64 EndTime)
+{
+	return StartTime < EndTime ? CurTime >= StartTime && CurTime < EndTime : CurTime > StartTime || CurTime <= EndTime;
+}
+
 bool FXD_GameTime::InHourRange(const FXD_EveryHourConfig& StartTime, const FXD_EveryHourConfig& EndTime) const
 {
-	return InTimeRange(GetTicks() % TicksPerHour, StartTime.Ticks, EndTime.Ticks);
+	return InTimeRange((GetTicks() / FXD_GameTimeConfig::Rate) % FXD_GameTimeConfig::TicksPerHour, StartTime.Ticks, EndTime.Ticks);
 }
 
 bool FXD_GameTime::InDayRange(const FXD_EveryDayConfig& StartTime, const FXD_EveryDayConfig& EndTime) const
 {
-	return InTimeRange(GetTicks() % TicksPerDay, StartTime.Ticks, EndTime.Ticks);
+	return InTimeRange((GetTicks() / FXD_GameTimeConfig::Rate) % FXD_GameTimeConfig::TicksPerDay, StartTime.Ticks, EndTime.Ticks);
 }
 
 bool FXD_GameTime::InWeekRange(const FXD_EveryWeekConfig& StartTime, const FXD_EveryWeekConfig& EndTime) const
 {
-	return InTimeRange(GetTicks() % TicksPerWeek, StartTime.Ticks, EndTime.Ticks);
+	return InTimeRange((GetTicks() / FXD_GameTimeConfig::Rate) % FXD_GameTimeConfig::TicksPerWeek, StartTime.Ticks, EndTime.Ticks);
 }
 
 bool FXD_GameTime::InMonthRange(const FXD_EveryMonthConfig& StartTime, const FXD_EveryMonthConfig& EndTime) const

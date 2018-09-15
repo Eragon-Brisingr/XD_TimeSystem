@@ -16,6 +16,7 @@ class XD_TIMESYSTEM_API UXD_TimeManager : public UActorComponent, public IXD_Sav
 	GENERATED_BODY()
 
 	friend class UXD_TimeManagerFunctionLibrary;
+	friend class AXD_TimeManagerPreviewActor;
 public:	
 	// Sets default values for this component's properties
 	UXD_TimeManager();
@@ -23,6 +24,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	void InitTimeEvents();
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 public:	
@@ -59,8 +62,6 @@ public:
 	TMap<FXD_SpecialTimeConfig, TArray<FXD_GameTimeEvent>> SpecialTimeEvents;
 
 	FDelegateHandle OnActorSpawnedHandle;
-
-	void InitTimeEvents();
 
 	void InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents)
 	{
