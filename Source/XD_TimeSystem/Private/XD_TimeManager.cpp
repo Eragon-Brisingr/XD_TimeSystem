@@ -231,14 +231,19 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 {
 	UWorld* World = WorldContextObject->GetWorld();
 #if WITH_EDITOR
+	if (World == nullptr)
+	{
+		return nullptr;
+	}
 	if (World->WorldType == EWorldType::Editor && World->TimeSeconds > 0.f)
 	{
 		if (PreviewTimeManager.IsValid())
 		{
 			return PreviewTimeManager.Get();
 		}
-		else if (AXD_TimeManagerPreviewActor* TimeManagerPreviewActor = *TActorIterator<AXD_TimeManagerPreviewActor>(World, GetDefault<UXD_TimeSystemSettings>()->TimeManagerPreviewActorClass))
+		else if (TActorIterator<AXD_TimeManagerPreviewActor> It = TActorIterator<AXD_TimeManagerPreviewActor>(World, GetDefault<UXD_TimeSystemSettings>()->TimeManagerPreviewActorClass))
 		{
+			AXD_TimeManagerPreviewActor* TimeManagerPreviewActor = *It;
 			PreviewTimeManager = TimeManagerPreviewActor->PreviewTimeManager;
 			return TimeManagerPreviewActor->PreviewTimeManager;
 		}
@@ -249,7 +254,6 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 		return nullptr;
 	}
 #endif
-
 	if (AGameStateBase* GameState = World->GetGameState())
 	{
 		if (GameState->Implements<UXD_TimeSystem_GameStateInterface>())
