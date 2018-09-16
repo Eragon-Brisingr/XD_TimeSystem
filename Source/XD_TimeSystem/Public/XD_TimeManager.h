@@ -32,6 +32,10 @@ protected:
 	virtual void OnRegister() override;
 
 	virtual void OnUnregister() override;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -51,6 +55,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "时间系统", Replicated, meta = (DisplayName = "时间流逝倍率", ClampMin = "0", ClampMax = "1000000"))
 	float TimeSpendRate = 20.f;
 
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void SetTimeSpendRate(float Rate) { TimeSpendRate = Rate; }
+
+	static TAutoConsoleVariable<float> CVarTimeSpendRate;
 	//游戏时间事件
 public:
 	TMap<FXD_EveryHourConfig, TArray<FXD_GameTimeEvent>> EveryHourEvents;

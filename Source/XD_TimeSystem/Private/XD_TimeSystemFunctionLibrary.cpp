@@ -56,7 +56,7 @@ void UXD_TimeManagerFunctionLibrary::InvokeSetGameTimeSpendRate(const UObject* W
 	{
 		if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 		{
-			TimeManager->TimeSpendRate = Rate;
+			TimeManager->SetTimeSpendRate(Rate);
 		}
 	}
 }

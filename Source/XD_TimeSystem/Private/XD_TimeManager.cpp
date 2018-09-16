@@ -70,6 +70,7 @@ void UXD_TimeManager::OnRegister()
 #if WITH_EDITOR
 	if (GetWorld() && GetWorld()->WorldType == EWorldType::Editor)
 	{
+		PreviewTimeManager = this;
 		InitTimeEvents();
 	}
 #endif
@@ -81,12 +82,38 @@ void UXD_TimeManager::OnUnregister()
 	GetWorld()->RemoveOnActorSpawnedHandler(OnActorSpawnedHandle);
 }
 
+TAutoConsoleVariable<float> UXD_TimeManager::CVarTimeSpendRate(
+	TEXT("Game.Time.SpendRate"),
+	20.f,
+	TEXT("游戏时间的速度.\n"),
+	ECVF_Scalability);
+
+#if WITH_EDITOR
+void UXD_TimeManager::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+}
+#endif
+
 // Called every frame
 void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+
+	//GameTimeSpendRate
+	if (CVarTimeSpendRate->TestFlags(ECVF_SetByConsole))
+	{
+		float InvokeRate = CVarTimeSpendRate.GetValueOnGameThread();
+		if (InvokeRate != TimeSpendRate)
+		{
+			SetTimeSpendRate(InvokeRate);
+		}
+		CVarTimeSpendRate->ClearFlags(ECVF_SetByConsole);
+	}
+
+	//GameTimeTick
 	int64 PreTicks = CurrentTime.GetTicks();
 	CurrentTime += DeltaTime * FXD_GameTime::TicksPerSecond * TimeSpendRate;
 
@@ -243,7 +270,7 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 	{
 		return nullptr;
 	}
-	if (World->WorldType == EWorldType::Editor && World->TimeSeconds > 0.f)
+	if (World->WorldType == EWorldType::Editor)
 	{
 		if (PreviewTimeManager.IsValid())
 		{
