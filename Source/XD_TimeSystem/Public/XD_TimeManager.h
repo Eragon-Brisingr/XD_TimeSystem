@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "时间系统", Replicated, SaveGame, meta = (DisplayName = "当前时间"))
 	FXD_GameTime CurrentTime;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "时间系统", Replicated, meta = (DisplayName = "时间流逝倍率"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "时间系统", Replicated, meta = (DisplayName = "时间流逝倍率", ClampMin = "0", ClampMax = "1000000"))
 	float TimeSpendRate = 20.f;
 
 	//游戏时间事件

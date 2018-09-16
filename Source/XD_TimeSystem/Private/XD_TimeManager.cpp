@@ -59,12 +59,21 @@ void UXD_TimeManager::InitTimeEvents()
 void UXD_TimeManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+
+	InitTimeEvents();
 }
 
 void UXD_TimeManager::OnRegister()
 {
 	Super::OnRegister();
-	InitTimeEvents();
+
+	//GameState在游戏中还没被注册到World中
+#if WITH_EDITOR
+	if (GetWorld() && GetWorld()->WorldType == EWorldType::Editor)
+	{
+		InitTimeEvents();
+	}
+#endif
 }
 
 void UXD_TimeManager::OnUnregister()

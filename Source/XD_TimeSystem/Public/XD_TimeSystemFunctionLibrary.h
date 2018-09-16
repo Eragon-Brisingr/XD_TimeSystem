@@ -391,6 +391,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "TimeSpendRate"))
 	static float GetGameTimeSpendRate(const UObject* WorldContextObject);
 
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
+	static void InvokeSetGameTimeSpendRate(const UObject* WorldContextObject, float Rate);
+public:
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
 
