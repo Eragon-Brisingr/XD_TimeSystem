@@ -410,7 +410,7 @@ public:
 	static void AddEveryYearEvent_Instant(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
-	static void AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+	static void AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent, const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
@@ -428,7 +428,7 @@ public:
 	static void RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
-	static void RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject);
+	static void RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent, const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static bool ContainsEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent, const UObject* WorldContextObject);
@@ -472,4 +472,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo"))
 	static void GameTimeRetriggerableDelay(const UObject* WorldContextObject, const FXD_GameTimeSpan& TimeSpan, FLatentActionInfo LatentInfo);
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	static void AddRecordableDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	static void AddRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	static bool ContainsRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	static void RemoveRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
 };

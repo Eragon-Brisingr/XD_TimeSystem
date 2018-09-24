@@ -101,11 +101,11 @@ void UXD_TimeManagerFunctionLibrary::AddEveryYearEvent_Instant(const FXD_EveryYe
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->AddSpecialTimeEvent_Instant(SpecialTimeConfig, EveryYearEvent);
+		TimeManager->AddSpecialTimeEvent_Instant(SpecialTimeConfig, SpecialTimeEvent);
 	}
 }
 
@@ -149,11 +149,11 @@ void UXD_TimeManagerFunctionLibrary::RemoveEveryYearEvent(const FXD_EveryYearCon
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->RemoveSpecialTimeEvent(SpecialTimeConfig, EveryYearEvent);
+		TimeManager->RemoveSpecialTimeEvent(SpecialTimeConfig, SpecialTimeEvent);
 	}
 }
 
@@ -302,6 +302,39 @@ void UXD_TimeManagerFunctionLibrary::GameTimeRetriggerableDelay(const UObject* W
 		{
 			LatentInfo.CallbackTarget->ProcessEvent(TargetFunction, &(LatentInfo.Linkage));
 		}
+	}
+}
+
+void UXD_TimeManagerFunctionLibrary::AddRecordableDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject)
+{
+	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+	{
+		TimeManager->AddRecordableDelayEvent(GameTimeSpan, GameTimeEvent);
+	}
+}
+
+void UXD_TimeManagerFunctionLibrary::AddRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject)
+{
+	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+	{
+		TimeManager->AddRecordableGameTimeEvent(SpecialTimeConfig, GameTimeEvent);
+	}
+}
+
+bool UXD_TimeManagerFunctionLibrary::ContainsRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject)
+{
+	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+	{
+		TimeManager->ContainsRecordableGameTimeEvent(SpecialTimeConfig, GameTimeEvent);
+	}
+	return false;
+}
+
+void UXD_TimeManagerFunctionLibrary::RemoveRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject)
+{
+	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
+	{
+		TimeManager->RemoveRecordableGameTimeEvent(SpecialTimeConfig, GameTimeEvent);
 	}
 }
 

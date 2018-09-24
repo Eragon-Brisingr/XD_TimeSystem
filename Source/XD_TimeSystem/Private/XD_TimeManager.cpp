@@ -88,6 +88,40 @@ TAutoConsoleVariable<float> UXD_TimeManager::CVarTimeSpendRate(
 	TEXT("游戏时间的速度.\n"),
 	ECVF_Scalability);
 
+void UXD_TimeManager::AddRecordableDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FXD_GameTimeEvent& GameTimeEvent)
+{
+	if (GameTimeSpan.GetTicks() >= 0)
+	{
+		AddRecordableGameTimeEvent(CurrentTime + GameTimeSpan, GameTimeEvent);
+	}
+	else
+	{
+		GameTimeEvent.ExecuteIfBound();
+	}
+}
+
+void UXD_TimeManager::AddRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent)
+{
+	RecordableGameTimeEvents.FindOrAdd(SpecialTimeConfig).GameTimeEvents.Add(GameTimeEvent);
+}
+
+bool UXD_TimeManager::ContainsRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent) const
+{
+	if (const FXD_GameTimeEvents* Events = RecordableGameTimeEvents.Find(SpecialTimeConfig))
+	{
+		return Events->GameTimeEvents.Contains(GameTimeEvent);
+	}
+	return false;
+}
+
+void UXD_TimeManager::RemoveRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent)
+{
+	if (FXD_GameTimeEvents* Events = RecordableGameTimeEvents.Find(SpecialTimeConfig))
+	{
+		Events->GameTimeEvents.Remove(GameTimeEvent);
+	}
+}
+
 #if WITH_EDITOR
 void UXD_TimeManager::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -181,6 +215,13 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 					InvokeExecuteGameTimeEvents(*Events);
 					//Delete Special Things
 					SpecialTimeEvents.Remove(SpecialTimeConfig);
+				}
+
+				if (FXD_GameTimeEvents* Events = RecordableGameTimeEvents.Find(SpecialTimeConfig))
+				{
+					InvokeExecuteGameTimeEvents(Events->GameTimeEvents);
+					//Delete Special Things
+					RecordableGameTimeEvents.Remove(SpecialTimeConfig);
 				}
 			}
 		}
@@ -331,9 +372,9 @@ void UXD_TimeManager::AddEveryYearEvent_Instant(const FXD_EveryYearConfig& Every
 	EveryYearEvents.FindOrAdd(EveryYearConfig).Add(EveryYearEvent);
 }
 
-void UXD_TimeManager::AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent)
+void UXD_TimeManager::AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent)
 {
-	SpecialTimeEvents.FindOrAdd(SpecialTimeConfig).Add(EveryYearEvent);
+	SpecialTimeEvents.FindOrAdd(SpecialTimeConfig).Add(SpecialTimeEvent);
 }
 
 void UXD_TimeManager::RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)
@@ -376,11 +417,11 @@ void UXD_TimeManager::RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearC
 	}
 }
 
-void UXD_TimeManager::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent)
+void UXD_TimeManager::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent)
 {
 	if (TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(SpecialTimeConfig))
 	{
-		Events->RemoveSingle(EveryYearEvent);
+		Events->RemoveSingle(SpecialTimeEvent);
 	}
 }
 
@@ -429,11 +470,11 @@ bool UXD_TimeManager::ContainsEveryYearEvent(const FXD_EveryYearConfig& EveryYea
 	return false;
 }
 
-bool UXD_TimeManager::ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent) const
+bool UXD_TimeManager::ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent) const
 {
 	if (const TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(SpecialTimeConfig))
 	{
-		return Events->Contains(EveryYearEvent);
+		return Events->Contains(SpecialTimeEvent);
 	}
 	return false;
 }
@@ -450,66 +491,66 @@ void UXD_TimeManager::AddEveryHourEvent_Duration(const FXD_EveryHourConfig& Star
 	AddEveryHourEvent_Instant(Start, EveryHourEvent);
 }
 
-void UXD_TimeManager::AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& EveryDayEvent)
 {
 	if (CurrentTime.InDayRange(Start, End))
 	{
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		EveryHourEvent.ExecuteIfBound();
+		EveryDayEvent.ExecuteIfBound();
 	}
-	AddEveryDayEvent_Instant(Start, EveryHourEvent);
+	AddEveryDayEvent_Instant(Start, EveryDayEvent);
 }
 
-void UXD_TimeManager::AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& EveryWeekEvent)
 {
 	if (CurrentTime.InWeekRange(Start, End))
 	{
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		EveryHourEvent.ExecuteIfBound();
+		EveryWeekEvent.ExecuteIfBound();
 	}
-	AddEveryWeekEvent_Instant(Start, EveryHourEvent);
+	AddEveryWeekEvent_Instant(Start, EveryWeekEvent);
 }
 
-void UXD_TimeManager::AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& EveryMonthEvent)
 {
 	if (CurrentTime.InMonthRange(Start, End))
 	{
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		EveryHourEvent.ExecuteIfBound();
+		EveryMonthEvent.ExecuteIfBound();
 	}
-	AddEveryMonthEvent_Instant(Start, EveryHourEvent);
+	AddEveryMonthEvent_Instant(Start, EveryMonthEvent);
 }
 
-void UXD_TimeManager::AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& EveryYearEvent)
 {
 	if (CurrentTime.InYearRange(Start, End))
 	{
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		EveryHourEvent.ExecuteIfBound();
+		EveryYearEvent.ExecuteIfBound();
 	}
-	AddEveryYearEvent_Instant(Start, EveryHourEvent);
+	AddEveryYearEvent_Instant(Start, EveryYearEvent);
 }
 
-void UXD_TimeManager::AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& SpecialTimeEvent)
 {
 	if (CurrentTime.InSpecialTimeRange(Start, End))
 	{
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		EveryHourEvent.ExecuteIfBound();
+		SpecialTimeEvent.ExecuteIfBound();
 	}
 	else if (CurrentTime.GetTicks() < Start.GetTicks())
 	{
-		AddSpecialTimeEvent_Instant(Start, EveryHourEvent);
+		AddSpecialTimeEvent_Instant(Start, SpecialTimeEvent);
 	}
 }
 

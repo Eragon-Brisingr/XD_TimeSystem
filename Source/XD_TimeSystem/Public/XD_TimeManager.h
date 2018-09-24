@@ -83,6 +83,22 @@ public:
 		}
 	}
 
+public:
+	UPROPERTY(SaveGame)
+	TMap<FXD_SpecialTimeConfig, FXD_GameTimeEvents> RecordableGameTimeEvents;
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddRecordableDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FXD_GameTimeEvent& GameTimeEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void AddRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent);
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	bool ContainsRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent) const;
+
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
+	void RemoveRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent);
+
 	//GameTimeDelay
 private:
 	struct FGameTimeDelayAction
@@ -125,7 +141,7 @@ public:
 	void AddEveryYearEvent_Instant(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent);
+	void AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent);
@@ -143,7 +159,7 @@ public:
 	void RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent);
+	void RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	bool ContainsEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent) const;
@@ -161,25 +177,25 @@ public:
 	bool ContainsEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent) const;
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	bool ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& EveryYearEvent) const;
+	bool ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent) const;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void AddEveryHourEvent_Duration(const FXD_EveryHourConfig& Start, const FXD_EveryHourConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
+	void AddEveryDayEvent_Duration(const FXD_EveryDayConfig& Start, const FXD_EveryDayConfig& End, const FXD_GameTimeEvent& EveryDayEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
+	void AddEveryWeekEvent_Duration(const FXD_EveryWeekConfig& Start, const FXD_EveryWeekConfig& End, const FXD_GameTimeEvent& EveryWeekEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
+	void AddEveryMonthEvent_Duration(const FXD_EveryMonthConfig& Start, const FXD_EveryMonthConfig& End, const FXD_GameTimeEvent& EveryMonthEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
+	void AddEveryYearEvent_Duration(const FXD_EveryYearConfig& Start, const FXD_EveryYearConfig& End, const FXD_GameTimeEvent& EveryYearEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& EveryHourEvent);
+	void AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& Start, const FXD_SpecialTimeConfig& End, const FXD_GameTimeEvent& SpecialTimeEvent);
 
 };

@@ -18,6 +18,15 @@ struct FXD_SpecialTimeConfig;
  */
 DECLARE_DYNAMIC_DELEGATE(FXD_GameTimeEvent);
 
+USTRUCT()
+struct FXD_GameTimeEvents
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(SaveGame)
+	TArray<FXD_GameTimeEvent> GameTimeEvents;
+};
+
 UENUM(BlueprintType)
 enum class EXD_DayOfWeek : uint8
 {
@@ -616,6 +625,10 @@ struct XD_TIMESYSTEM_API FXD_SpecialTimeConfig
 public:
 	FXD_SpecialTimeConfig()
 		:FXD_SpecialTimeConfig(1000, 1, 1, 0, 0)
+	{}
+
+	FXD_SpecialTimeConfig(const FXD_GameTime& GameTime)
+		:SpecialTime(GameTime)
 	{}
 
 	FXD_SpecialTimeConfig(int32 Year, int32 Month, int32 Day, int32 Hour, int32 Minute)
