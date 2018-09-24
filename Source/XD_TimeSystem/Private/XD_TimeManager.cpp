@@ -553,4 +553,3 @@ void UXD_TimeManager::AddSpecialTimeEvent_Duration(const FXD_SpecialTimeConfig& 
 		AddSpecialTimeEvent_Instant(Start, SpecialTimeEvent);
 	}
 }
-

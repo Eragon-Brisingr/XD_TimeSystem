@@ -474,15 +474,15 @@ public:
 	static void GameTimeRetriggerableDelay(const UObject* WorldContextObject, const FXD_GameTimeSpan& TimeSpan, FLatentActionInfo LatentInfo);
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void AddRecordableDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void AddRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static bool ContainsRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (Latent, WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject"))
 	static void RemoveRecordableGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& GameTimeEvent, const UObject* WorldContextObject);
 };
