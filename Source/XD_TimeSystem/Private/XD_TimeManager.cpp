@@ -21,6 +21,7 @@ UXD_TimeManager::UXD_TimeManager()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+	SetIsReplicated(true);
 }
 
 
@@ -277,7 +278,7 @@ void UXD_TimeManager::GetLifetimeReplicatedProps(TArray< class FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UXD_TimeManager, CurrentTime, COND_InitialOnly);
-	DOREPLIFETIME(UXD_TimeManager, CurrentTime);
+	DOREPLIFETIME(UXD_TimeManager, TimeSpendRate);
 }
 
 #if WITH_EDITOR

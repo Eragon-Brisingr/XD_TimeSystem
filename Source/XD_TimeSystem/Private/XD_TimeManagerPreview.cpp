@@ -3,7 +3,8 @@
 #include "XD_TimeManagerPreview.h"
 #include "XD_TimeManager.h"
 
-AXD_TimeManagerPreviewActor::AXD_TimeManagerPreviewActor()
+AXD_TimeManagerPreviewActor::AXD_TimeManagerPreviewActor(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 

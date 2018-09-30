@@ -17,6 +17,8 @@ class XD_TIMESYSTEM_API UXD_TimeSystemSettings : public UObject
 public:
 	UXD_TimeSystemSettings();
 	
+#if WITH_EDITORONLY_DATA
 	UPROPERTY(EditAnywhere, Category = "时间系统", Config)
 	TSubclassOf<class AXD_TimeManagerPreviewActor> TimeManagerPreviewActorClass;
+#endif
 };

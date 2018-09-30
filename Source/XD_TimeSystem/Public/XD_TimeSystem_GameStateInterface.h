@@ -24,5 +24,5 @@ class XD_TIMESYSTEM_API IXD_TimeSystem_GameStateInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = "游戏|时间系统")
 	class UXD_TimeManager* GetGameTimeManager() const;
-	class UXD_TimeManager* GetGameTimeManager_Implementation() const { return nullptr; }
+	virtual class UXD_TimeManager* GetGameTimeManager_Implementation() const { return nullptr; }
 };

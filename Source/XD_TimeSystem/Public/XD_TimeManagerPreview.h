@@ -16,7 +16,7 @@ class XD_TIMESYSTEM_API AXD_TimeManagerPreviewActor : public AInfo
 	
 public:
 	// Sets default values for this actor's properties
-	AXD_TimeManagerPreviewActor();
+	AXD_TimeManagerPreviewActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	virtual void BeginPlay() override;

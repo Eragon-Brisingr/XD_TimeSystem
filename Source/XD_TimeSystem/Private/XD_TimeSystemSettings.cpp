@@ -8,5 +8,7 @@
 
 UXD_TimeSystemSettings::UXD_TimeSystemSettings()
 {
+#if WITH_EDITOR
 	TimeManagerPreviewActorClass = AXD_TimeManagerPreviewActor::StaticClass();
+#endif
 }
