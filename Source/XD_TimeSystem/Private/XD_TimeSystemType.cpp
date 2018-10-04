@@ -7,7 +7,7 @@
 
 bool FXD_GameTime::InTimeRange(int64 CurTime, int64 StartTime, int64 EndTime)
 {
-	return StartTime < EndTime ? CurTime >= StartTime && CurTime < EndTime : CurTime > StartTime || CurTime <= EndTime;
+	return StartTime < EndTime ? CurTime >= StartTime && CurTime < EndTime : CurTime >= StartTime || CurTime < EndTime;
 }
 
 bool FXD_GameTime::InHourRange(const FXD_EveryHourConfig& StartTime, const FXD_EveryHourConfig& EndTime) const
