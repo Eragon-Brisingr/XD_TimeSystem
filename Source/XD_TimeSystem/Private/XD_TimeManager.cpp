@@ -150,17 +150,17 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	//GameTimeTick
 	int64 PreTicks = CurrentTime.GetTicks();
-	CurrentTime += DeltaTime * FXD_GameTime::TicksPerSecond * TimeSpendRate;
+	CurrentTime += DeltaTime * FXD_GameTimeConfig::TicksPerSecond * TimeSpendRate;
 
-	int64 PreMinutes = PreTicks / FXD_GameTime::TicksPerMinute;
-	int64 CurMinutes = CurrentTime.GetTicks() / FXD_GameTime::TicksPerMinute;
+	int64 PreMinutes = PreTicks / FXD_GameTimeConfig::TicksPerMinute;
+	int64 CurMinutes = CurrentTime.GetTicks() / FXD_GameTimeConfig::TicksPerMinute;
 	int64 SpendMinutes = CurMinutes - PreMinutes;
 	if (SpendMinutes > 0)
 	{
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		for (FXD_GameTime InterpGameTime((PreMinutes + 1) * FXD_GameTime::TicksPerMinute); InterpGameTime <= CurMinutes  * FXD_GameTime::TicksPerMinute; InterpGameTime += FXD_GameTime::TicksPerMinute)
+		for (FXD_GameTime InterpGameTime((PreMinutes + 1) * FXD_GameTimeConfig::TicksPerMinute); InterpGameTime <= FXD_GameTime(CurMinutes * FXD_GameTimeConfig::TicksPerMinute); InterpGameTime += FXD_GameTimeConfig::TicksPerMinute)
 		{
 			int32 InterpYear, InterpMonth, InterpDay;
 			InterpGameTime.GetDate(InterpYear, InterpMonth, InterpDay);

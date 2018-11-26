@@ -18,7 +18,7 @@ class XD_TIMESYSTEM_API UXD_TimeSystemFunctionLibraryEx : public UBlueprintFunct
 	//时间-天文相关
 public:
 	static constexpr float LunarMonthOfDay = 29.53059f;
-	static constexpr int64 TicksPreLunarMonth = LunarMonthOfDay * FXD_GameTime::TicksPerDay;
+	static constexpr int64 TicksPreLunarMonth = LunarMonthOfDay * FXD_GameTimeConfig::TicksPerDay;
 	
 	UFUNCTION(BlueprintPure, Category = "游戏|时间系统", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "PhaseRate"))
 	static float GetMoonPhaseRate(const UObject* WorldContextObject);
