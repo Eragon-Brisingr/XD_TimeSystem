@@ -342,7 +342,7 @@ public:
 	{
 		return Month == EveryYearConfig.Month && Ticks == EveryYearConfig.Ticks;
 	}
-	bool operator<(const FXD_EveryYearConfig& Ohter) const { return Month < Ohter.Month ? Ticks < Ohter.Ticks : true; }
+	bool operator<(const FXD_EveryYearConfig& Ohter) const { return Month < Ohter.Month ? true : Ticks < Ohter.Ticks; }
 
 	void GetConfig(int32& OutMonth, int32& Day, int32& Hour, int32& Minute) const
 	{
