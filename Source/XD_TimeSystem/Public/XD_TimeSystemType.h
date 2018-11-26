@@ -156,13 +156,13 @@ namespace FXD_GameTimeConfigConfig
 {
 	static constexpr int64 Rate = FXD_GameTimeConfig::TicksPerSecond;
 
-	static constexpr int64 TicksPerDay = FXD_GameTimeConfig::TicksPerDay / FXD_GameTimeConfig::TicksPerSecond;
-	static constexpr int64 TicksPerHour = FXD_GameTimeConfig::TicksPerHour / FXD_GameTimeConfig::TicksPerSecond;
-	static constexpr int64 TicksPerMicrosecond = FXD_GameTimeConfig::TicksPerMicrosecond / FXD_GameTimeConfig::TicksPerSecond;
-	static constexpr int64 TicksPerMillisecond = FXD_GameTimeConfig::TicksPerMillisecond / FXD_GameTimeConfig::TicksPerSecond;
-	static constexpr int64 TicksPerMinute = FXD_GameTimeConfig::TicksPerMinute / FXD_GameTimeConfig::TicksPerSecond;
+	static constexpr int64 TicksPerDay = FXD_GameTimeConfig::TicksPerDay / Rate;
+	static constexpr int64 TicksPerHour = FXD_GameTimeConfig::TicksPerHour / Rate;
+	static constexpr int64 TicksPerMicrosecond = FXD_GameTimeConfig::TicksPerMicrosecond / Rate;
+	static constexpr int64 TicksPerMillisecond = FXD_GameTimeConfig::TicksPerMillisecond / Rate;
+	static constexpr int64 TicksPerMinute = FXD_GameTimeConfig::TicksPerMinute / Rate;
 	static constexpr int64 TicksPerSecond = FXD_GameTimeConfig::TicksPerSecond / Rate;
-	static constexpr int64 TicksPerWeek = FXD_GameTimeConfig::TicksPerWeek / FXD_GameTimeConfig::TicksPerSecond;
+	static constexpr int64 TicksPerWeek = FXD_GameTimeConfig::TicksPerWeek / Rate;
 };
 
 USTRUCT(BlueprintType, meta = (HasNativeMake = "XD_GameTimeTypeFunctionLibrary.MakeEveryHourConfig", HasNativeBreak = "XD_GameTimeTypeFunctionLibrary.BreakEveryHourConfig"))
