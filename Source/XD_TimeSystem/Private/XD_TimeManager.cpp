@@ -89,6 +89,19 @@ TAutoConsoleVariable<float> UXD_TimeManager::CVarTimeSpendRate(
 	TEXT("游戏时间的速度.\n"),
 	ECVF_Scalability);
 
+void UXD_TimeManager::AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate)
+{
+	NativeSpecialTimeEvents.FindOrAdd(SpecialTimeConfig).Add(GameTimeNativeDelegate);
+}
+
+void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const UObject* Object)
+{
+	if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(SpecialTimeConfig))
+	{
+		Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetUObject() == Object; });
+	}
+}
+
 void UXD_TimeManager::AddRecordableDelayEvent(const FXD_GameTimeSpan& GameTimeSpan, const FXD_GameTimeEvent& GameTimeEvent)
 {
 	if (GameTimeSpan.GetTicks() >= 0)
@@ -216,6 +229,16 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 					InvokeExecuteGameTimeEvents(*Events);
 					//Delete Special Things
 					SpecialTimeEvents.Remove(SpecialTimeConfig);
+				}
+
+				if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(SpecialTimeConfig))
+				{
+					for (const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate : *Events)
+					{
+						GameTimeNativeDelegate.ExecuteIfBound();
+					}
+					//Delete Special Things
+					NativeSpecialTimeEvents.Remove(SpecialTimeConfig);
 				}
 
 				if (FXD_GameTimeEvents* Events = RecordableGameTimeEvents.Find(SpecialTimeConfig))

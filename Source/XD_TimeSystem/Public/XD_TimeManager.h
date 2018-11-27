@@ -83,6 +83,16 @@ public:
 		}
 	}
 
+	//Native版本
+public:
+	DECLARE_DELEGATE(FXD_GameTimeNativeDelegate);
+	TMap<FXD_SpecialTimeConfig, TArray<FXD_GameTimeNativeDelegate>> NativeSpecialTimeEvents;
+
+	void AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate);
+
+	void RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const UObject* Object);
+
+	//可被保存的时间事件
 public:
 	UPROPERTY(SaveGame)
 	TMap<FXD_SpecialTimeConfig, FXD_GameTimeEvents> RecordableGameTimeEvents;
