@@ -718,3 +718,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "时间系统", SaveGame)
 	FXD_GameTime SpecialTime;
 };
+
+struct XD_TIMESYSTEM_API FXD_NativeSpecialGameTimeHandle
+{
+	friend class UXD_TimeManager;
+private:
+	FXD_SpecialTimeConfig SpecialTimeConfig;
+	FDelegateHandle DelegateHandle;
+};
