@@ -88,7 +88,9 @@ public:
 	DECLARE_DELEGATE(FXD_GameTimeNativeDelegate);
 	TMap<FXD_SpecialTimeConfig, TArray<FXD_GameTimeNativeDelegate>> NativeSpecialTimeEvents;
 
-	void AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate);
+	FXD_NativeSpecialGameTimeHandle AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate);
+
+	void RemoveNativeSpecialGameTimeEvent(const FXD_NativeSpecialGameTimeHandle& Handle);
 
 	void RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const UObject* Object);
 

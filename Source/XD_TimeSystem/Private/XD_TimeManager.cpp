@@ -89,9 +89,14 @@ TAutoConsoleVariable<float> UXD_TimeManager::CVarTimeSpendRate(
 	TEXT("游戏时间的速度.\n"),
 	ECVF_Scalability);
 
-void UXD_TimeManager::AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate)
+FXD_NativeSpecialGameTimeHandle UXD_TimeManager::AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate)
 {
-	NativeSpecialTimeEvents.FindOrAdd(SpecialTimeConfig).Add(GameTimeNativeDelegate);
+	FXD_NativeSpecialGameTimeHandle Handle;
+	Handle.SpecialTimeConfig = SpecialTimeConfig;
+	TArray<FXD_GameTimeNativeDelegate>& Events = NativeSpecialTimeEvents.FindOrAdd(SpecialTimeConfig);
+	int32 Index = Events.Add(GameTimeNativeDelegate);
+	Handle.DelegateHandle = Events[Index].GetHandle();
+	return Handle;
 }
 
 void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const UObject* Object)
@@ -99,6 +104,14 @@ void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConf
 	if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(SpecialTimeConfig))
 	{
 		Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetUObject() == Object; });
+	}
+}
+
+void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_NativeSpecialGameTimeHandle& Handle)
+{
+	if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(Handle.SpecialTimeConfig))
+	{
+		Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetHandle() == Handle.DelegateHandle; });
 	}
 }
 
