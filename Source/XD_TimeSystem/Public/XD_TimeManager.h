@@ -90,7 +90,7 @@ public:
 
 	FXD_NativeSpecialGameTimeHandle AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate);
 
-	void RemoveNativeSpecialGameTimeEvent(const FXD_NativeSpecialGameTimeHandle& Handle);
+	void RemoveNativeSpecialGameTimeEvent(FXD_NativeSpecialGameTimeHandle& Handle);
 
 	void RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const UObject* Object);
 

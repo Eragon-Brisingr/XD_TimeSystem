@@ -104,14 +104,27 @@ void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConf
 	if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(SpecialTimeConfig))
 	{
 		Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetUObject() == Object; });
+		if (Events->Num() == 0)
+		{
+			NativeSpecialTimeEvents.Remove(SpecialTimeConfig);
+		}
 	}
 }
 
-void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_NativeSpecialGameTimeHandle& Handle)
+void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(FXD_NativeSpecialGameTimeHandle& Handle)
 {
-	if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(Handle.SpecialTimeConfig))
+	if (Handle.DelegateHandle.IsValid())
 	{
-		Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetHandle() == Handle.DelegateHandle; });
+		if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(Handle.SpecialTimeConfig))
+		{
+			Handle.DelegateHandle.Reset();
+
+			Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetHandle() == Handle.DelegateHandle; });
+			if (Events->Num() == 0)
+			{
+				NativeSpecialTimeEvents.Remove(Handle.SpecialTimeConfig);
+			}
+		}
 	}
 }
 
@@ -146,6 +159,10 @@ void UXD_TimeManager::RemoveRecordableGameTimeEvent(const FXD_SpecialTimeConfig&
 	if (FXD_GameTimeEvents* Events = RecordableGameTimeEvents.Find(SpecialTimeConfig))
 	{
 		Events->GameTimeEvents.Remove(GameTimeEvent);
+		if (Events->GameTimeEvents.Num() == 0)
+		{
+			RecordableGameTimeEvents.Remove(SpecialTimeConfig);
+		}
 	}
 }
 
@@ -419,6 +436,10 @@ void UXD_TimeManager::RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourC
 	if (TArray<FXD_GameTimeEvent>* Events = EveryHourEvents.Find(EveryHourConfig))
 	{
 		Events->RemoveSingle(EveryHourEvent);
+		if (Events->Num() == 0)
+		{
+			EveryHourEvents.Remove(EveryHourConfig);
+		}
 	}
 }
 
@@ -427,6 +448,10 @@ void UXD_TimeManager::RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConf
 	if (TArray<FXD_GameTimeEvent>* Events = EveryDayEvents.Find(EveryDayConfig))
 	{
 		Events->RemoveSingle(EveryDayEvent);
+		if (Events->Num() == 0)
+		{
+			EveryDayEvents.Remove(EveryDayConfig);
+		}
 	}
 }
 
@@ -435,6 +460,10 @@ void UXD_TimeManager::RemoveEveryWeekDayEvent(const FXD_EveryWeekConfig& EveryWe
 	if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekConfig))
 	{
 		Events->RemoveSingle(EveryWeekDayEvent);
+		if (Events->Num() == 0)
+		{
+			EveryWeekDayEvents.Remove(EveryWeekConfig);
+		}
 	}
 }
 
@@ -443,6 +472,10 @@ void UXD_TimeManager::RemoveEveryMonthEvent(const FXD_EveryMonthConfig& EveryMon
 	if (TArray<FXD_GameTimeEvent>* Events = EveryMonthEvents.Find(EveryMonthConfig))
 	{
 		Events->RemoveSingle(EveryMonthEvent);
+		if (Events->Num() == 0)
+		{
+			EveryMonthEvents.Remove(EveryMonthConfig);
+		}
 	}
 }
 
@@ -451,6 +484,10 @@ void UXD_TimeManager::RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearC
 	if (TArray<FXD_GameTimeEvent>* Events = EveryYearEvents.Find(EveryYearConfig))
 	{
 		Events->RemoveSingle(EveryYearEvent);
+		if (Events->Num() == 0)
+		{
+			EveryYearEvents.Remove(EveryYearConfig);
+		}
 	}
 }
 
@@ -459,6 +496,10 @@ void UXD_TimeManager::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& Specia
 	if (TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(SpecialTimeConfig))
 	{
 		Events->RemoveSingle(SpecialTimeEvent);
+		if (Events->Num() == 0)
+		{
+			SpecialTimeEvents.Remove(SpecialTimeConfig);
+		}
 	}
 }
 

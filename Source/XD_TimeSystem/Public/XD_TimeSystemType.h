@@ -57,8 +57,8 @@ public:
 		:Timespan(Ticks)
 	{}
 
-	FXD_GameTimeSpan(int32 Days, int32 Hours, int32 Minutes, int32 Seconds = 0, int32 FractionNano = 0)
-		:Timespan(Days, Hours, Minutes, Seconds, FractionNano)
+	FXD_GameTimeSpan(int32 Days, int32 Hours, int32 Minutes)
+		:Timespan(Days, Hours, Minutes, 0, 0)
 	{}
 
 	int64 GetTicks() const
@@ -312,6 +312,8 @@ public:
 		Minute = Ticks % FXD_GameTimeConfigConfig::TicksPerHour / FXD_GameTimeConfigConfig::TicksPerMinute;
 	}
 
+	void GetConfigSafe(int32 Year, int32 Month, int32& Day, int32& Hour, int32& Minute) const;
+
 	friend uint32 GetTypeHash(const FXD_EveryMonthConfig& EveryMonthParam)
 	{
 		return GetTypeHash(EveryMonthParam.Ticks);
@@ -352,6 +354,8 @@ public:
 		Minute = Ticks % FXD_GameTimeConfigConfig::TicksPerHour / FXD_GameTimeConfigConfig::TicksPerMinute;
 	}
 
+	void GetConfigSafe(int32 Year, int32& OutMonth, int32& Day, int32& Hour, int32& Minute) const;
+
 	friend uint32 GetTypeHash(const FXD_EveryYearConfig& EveryYearConfig)
 	{
 		return HashCombine(GetTypeHash(EveryYearConfig.Month), GetTypeHash(EveryYearConfig.Ticks));
@@ -377,6 +381,10 @@ public:
 		:FXD_GameTime(1000, 1, 1, 0, 0, 0, 0)
 	{}
 	FXD_GameTime(int64 InTicks) : DateTime(InTicks) {}
+	FXD_GameTime(const FXD_GameTimeSpan& GameTimeSpan)
+		:DateTime(GameTimeSpan.GetTicks())
+	{}
+
 	FXD_GameTime(int32 Year, int32 Month, int32 Day, int32 Hour, int32 Minute, int32 Second = 0, int32 Millisecond = 0)
 		:DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond) {}
 
@@ -523,9 +531,19 @@ public:
 		DateTime = FDateTime(GetYear(), GetMonth(), Day < MaxDays ? Day : MaxDays, GetHour(), GetMinute(), GetSecond(), GetMillisecond());
 	}
 
+	int32 GetTotalDays() const
+	{
+		return GetTicks() / FXD_GameTimeConfig::TicksPerDay;
+	}
+
+	int32 GetDayOfWeekNum() const
+	{
+		return static_cast<int32>(DateTime.GetDayOfWeek());
+	}
+
 	EXD_DayOfWeek GetDayOfWeek() const
 	{
-		return static_cast<EXD_DayOfWeek>(DateTime.GetDayOfWeek());
+		return static_cast<EXD_DayOfWeek>(GetDayOfWeekNum());
 	}
 
 	int32 GetDayOfYear() const
@@ -713,6 +731,11 @@ public:
 	int64 GetTicks() const
 	{
 		return SpecialTime.GetTicks();
+	}
+
+	FString ToString() const
+	{
+		return SpecialTime.ToString();
 	}
 private:
 	UPROPERTY(EditAnywhere, Category = "时间系统", SaveGame)

@@ -147,11 +147,32 @@ FString FXD_EveryWeekConfig::ToString() const
 	return FString::Printf(TEXT("%s %d时 %d分"), *XD_DayOfWeek::DayOfWeekToText(DayOfWeek).ToString(), Hour, Minute);
 }
 
+void FXD_EveryMonthConfig::GetConfigSafe(int32 Year, int32 Month, int32& Day, int32& Hour, int32& Minute) const
+{
+	GetConfig(Day, Hour, Minute);
+
+	int32 ValidDayOfMonth = FXD_GameTime::DaysInMonth(Year, Month);
+	if (Day > ValidDayOfMonth)
+	{
+		Day = ValidDayOfMonth;
+	}
+}
+
 FString FXD_EveryMonthConfig::ToString() const
 {
 	int Day, Hour, Minute;
 	GetConfig(Day, Hour, Minute);
 	return FString::Printf(TEXT("%d日 %d时 %d分"), Day, Hour, Minute);
+}
+
+void FXD_EveryYearConfig::GetConfigSafe(int32 Year, int32& OutMonth, int32& Day, int32& Hour, int32& Minute) const
+{
+	GetConfig(OutMonth, Day, Hour, Minute);
+	int32 ValidDayOfMonth = FXD_GameTime::DaysInMonth(Year, OutMonth);
+	if (Day > ValidDayOfMonth)
+	{
+		Day = ValidDayOfMonth;
+	}
 }
 
 FString FXD_EveryYearConfig::ToString() const
