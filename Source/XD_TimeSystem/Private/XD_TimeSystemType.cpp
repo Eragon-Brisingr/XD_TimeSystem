@@ -125,26 +125,41 @@ FString FXD_GameTime::ToString() const
 	return ToText().ToString();
 }
 
-FString FXD_EveryHourConfig::ToString() const
+FText FXD_EveryHourConfig::ToText() const
 {
 	int Minute;
 	GetConfig(Minute);
-	return FString::Printf(TEXT("%d分"), Minute);
+	return FText::Format(LOCTEXT("{0}分","{0}分"), Minute);
+}
+
+FString FXD_EveryHourConfig::ToString() const
+{
+	return ToText().ToString();
+}
+
+FText FXD_EveryDayConfig::ToText() const
+{
+	int Hour, Minute;
+	GetConfig(Hour, Minute);
+	return FText::Format(LOCTEXT("{0}时 {1}分", "{0}时 {1}分"), Hour, Minute);
 }
 
 FString FXD_EveryDayConfig::ToString() const
 {
-	int Hour, Minute;
-	GetConfig(Hour, Minute);
-	return FString::Printf(TEXT("%d时 %d分"), Hour, Minute);
+	return ToText().ToString();
 }
 
-FString FXD_EveryWeekConfig::ToString() const
+FText FXD_EveryWeekConfig::ToText() const
 {
 	int Hour, Minute;
 	EXD_DayOfWeek DayOfWeek;
 	GetConfig(DayOfWeek, Hour, Minute);
-	return FString::Printf(TEXT("%s %d时 %d分"), *XD_DayOfWeek::DayOfWeekToText(DayOfWeek).ToString(), Hour, Minute);
+	return FText::Format(LOCTEXT("{0} {1}时 {2}分", "{0} {1}时 {2}分"), XD_DayOfWeek::DayOfWeekToText(DayOfWeek), Hour, Minute);
+}
+
+FString FXD_EveryWeekConfig::ToString() const
+{
+	return ToText().ToString();
 }
 
 void FXD_EveryMonthConfig::GetConfigSafe(int32 Year, int32 Month, int32& Day, int32& Hour, int32& Minute) const
@@ -158,11 +173,16 @@ void FXD_EveryMonthConfig::GetConfigSafe(int32 Year, int32 Month, int32& Day, in
 	}
 }
 
-FString FXD_EveryMonthConfig::ToString() const
+FText FXD_EveryMonthConfig::ToText() const
 {
 	int Day, Hour, Minute;
 	GetConfig(Day, Hour, Minute);
-	return FString::Printf(TEXT("%d日 %d时 %d分"), Day, Hour, Minute);
+	return FText::Format(LOCTEXT("{0}日 {1}时 {2}分", "{0}日 {1}时 {2}分"), Day, Hour, Minute);
+}
+
+FString FXD_EveryMonthConfig::ToString() const
+{
+	return ToText().ToString();
 }
 
 void FXD_EveryYearConfig::GetConfigSafe(int32 Year, int32& OutMonth, int32& Day, int32& Hour, int32& Minute) const
@@ -175,11 +195,16 @@ void FXD_EveryYearConfig::GetConfigSafe(int32 Year, int32& OutMonth, int32& Day,
 	}
 }
 
-FString FXD_EveryYearConfig::ToString() const
+FText FXD_EveryYearConfig::ToText() const
 {
 	int Month, Day, Hour, Minute;
 	GetConfig(Month, Day, Hour, Minute);
-	return FString::Printf(TEXT("%d月 %d日 %d时 %d分"), Month, Day, Hour, Minute);
+	return FText::Format(LOCTEXT("{0}月 {1}日 {2}时 {3}分", "{0}月 {1}日 {2}时 {3}分"), Month, Day, Hour, Minute);
+}
+
+FString FXD_EveryYearConfig::ToString() const
+{
+	return ToText().ToString();
 }
 
 #undef LOCTEXT_NAMESPACE

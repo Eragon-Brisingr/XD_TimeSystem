@@ -75,13 +75,7 @@ public:
 
 	FDelegateHandle OnActorSpawnedHandle;
 
-	void InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents)
-	{
-		for (const FXD_GameTimeEvent& GameTimeEvent : GameTimeEvents)
-		{
-			GameTimeEvent.ExecuteIfBound();
-		}
-	}
+	void InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents);
 
 	//Native版本
 public:
@@ -162,7 +156,7 @@ public:
 	void RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent);
 	
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
-	void RemoveEveryWeekDayEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
+	void RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "游戏|时间系统")
 	void RemoveEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent);

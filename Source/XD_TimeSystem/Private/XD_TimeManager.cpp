@@ -89,6 +89,15 @@ TAutoConsoleVariable<float> UXD_TimeManager::CVarTimeSpendRate(
 	TEXT("游戏时间的速度.\n"),
 	ECVF_Scalability);
 
+void UXD_TimeManager::InvokeExecuteGameTimeEvents(const TArray<FXD_GameTimeEvent>& GameTimeEvents)
+{
+	//防止事件执行时删除数组内元素，拷贝一份
+	for (const FXD_GameTimeEvent& GameTimeEvent : TArray<FXD_GameTimeEvent>(GameTimeEvents))
+	{
+		GameTimeEvent.ExecuteIfBound();
+	}
+}
+
 FXD_NativeSpecialGameTimeHandle UXD_TimeManager::AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate)
 {
 	FXD_NativeSpecialGameTimeHandle Handle;
@@ -263,7 +272,7 @@ void UXD_TimeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 				if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(SpecialTimeConfig))
 				{
-					for (const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate : *Events)
+					for (const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate : TArray<FXD_GameTimeNativeDelegate>(*Events))
 					{
 						GameTimeNativeDelegate.ExecuteIfBound();
 					}
@@ -455,7 +464,7 @@ void UXD_TimeManager::RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConf
 	}
 }
 
-void UXD_TimeManager::RemoveEveryWeekDayEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
+void UXD_TimeManager::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
 {
 	if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekConfig))
 	{

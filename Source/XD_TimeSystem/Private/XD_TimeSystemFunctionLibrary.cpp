@@ -125,11 +125,11 @@ void UXD_TimeManagerFunctionLibrary::RemoveEveryDayEvent(const FXD_EveryDayConfi
 	}
 }
 
-void UXD_TimeManagerFunctionLibrary::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent, const UObject* WorldContextObject)
+void UXD_TimeManagerFunctionLibrary::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekEvent, const UObject* WorldContextObject)
 {
 	if (UXD_TimeManager* TimeManager = GetGameTimeManager(WorldContextObject))
 	{
-		TimeManager->RemoveEveryWeekDayEvent(EveryWeekConfig, EveryWeekDayEvent);
+		TimeManager->RemoveEveryWeekEvent(EveryWeekConfig, EveryWeekEvent);
 	}
 }
 

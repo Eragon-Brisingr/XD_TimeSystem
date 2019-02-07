@@ -182,6 +182,7 @@ public:
 	{
 		return Ticks == EveryHourParam.Ticks;
 	}
+	bool operator>(const FXD_EveryHourConfig& Ohter) const { return Ticks > Ohter.Ticks; }
 	bool operator<(const FXD_EveryHourConfig& Ohter) const { return Ticks < Ohter.Ticks; }
 
 	friend uint32 GetTypeHash(const FXD_EveryHourConfig& EveryHourParam)
@@ -194,6 +195,7 @@ public:
 		Minute = Ticks / FXD_GameTimeConfigConfig::TicksPerMinute;
 	}
 
+	FText ToText() const;
 	FString ToString() const;
 private:
 	UPROPERTY(EditAnywhere, SaveGame)
@@ -217,6 +219,7 @@ public:
 	{
 		return Ticks == EveryDayParam.Ticks;
 	}
+	bool operator>(const FXD_EveryDayConfig& Ohter) const { return Ticks > Ohter.Ticks; }
 	bool operator<(const FXD_EveryDayConfig& Ohter) const { return Ticks < Ohter.Ticks; }
 
 	friend uint32 GetTypeHash(const FXD_EveryDayConfig& EveryDayParam)
@@ -230,6 +233,7 @@ public:
 		Minute = Ticks % FXD_GameTimeConfigConfig::TicksPerHour / FXD_GameTimeConfigConfig::TicksPerMinute;
 	}
 
+	FText ToText() const;
 	FString ToString() const;
 private:
 	UPROPERTY(EditAnywhere, SaveGame)
@@ -257,6 +261,7 @@ public:
 	{
 		return Ticks == EveryWeekParam.Ticks;
 	}
+	bool operator>(const FXD_EveryWeekConfig& Ohter) const { return Ticks > Ohter.Ticks; }
 	bool operator<(const FXD_EveryWeekConfig& Ohter) const { return Ticks < Ohter.Ticks; }
 
 	friend uint32 GetTypeHash(const FXD_EveryWeekConfig& EveryWeekParam)
@@ -278,6 +283,7 @@ public:
 		Minute = Ticks % FXD_GameTimeConfigConfig::TicksPerHour / FXD_GameTimeConfigConfig::TicksPerMinute;
 	}
 
+	FText ToText() const;
 	FString ToString() const;
 private:
 	UPROPERTY(EditAnywhere, SaveGame)
@@ -303,6 +309,7 @@ public:
 	{
 		return Ticks == EveryMonthParam.Ticks;
 	}
+	bool operator>(const FXD_EveryMonthConfig& Ohter) const { return Ticks > Ohter.Ticks; }
 	bool operator<(const FXD_EveryMonthConfig& Ohter) const { return Ticks < Ohter.Ticks; }
 
 	void GetConfig(int32& Day, int32& Hour, int32& Minute) const
@@ -319,6 +326,7 @@ public:
 		return GetTypeHash(EveryMonthParam.Ticks);
 	}
 
+	FText ToText() const;
 	FString ToString() const;
 private:
 	UPROPERTY(EditAnywhere, SaveGame)
@@ -344,6 +352,7 @@ public:
 	{
 		return Month == EveryYearConfig.Month && Ticks == EveryYearConfig.Ticks;
 	}
+	bool operator>(const FXD_EveryYearConfig& Ohter) const { return Month > Ohter.Month ? true : Ticks > Ohter.Ticks; }
 	bool operator<(const FXD_EveryYearConfig& Ohter) const { return Month < Ohter.Month ? true : Ticks < Ohter.Ticks; }
 
 	void GetConfig(int32& OutMonth, int32& Day, int32& Hour, int32& Minute) const
@@ -361,6 +370,7 @@ public:
 		return HashCombine(GetTypeHash(EveryYearConfig.Month), GetTypeHash(EveryYearConfig.Ticks));
 	}
 
+	FText ToText() const;
 	FString ToString() const;
 private:
 	UPROPERTY(EditAnywhere, SaveGame)
