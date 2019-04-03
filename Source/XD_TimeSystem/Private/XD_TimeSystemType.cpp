@@ -197,9 +197,9 @@ void FXD_EveryYearConfig::GetConfigSafe(int32 Year, int32& OutMonth, int32& Day,
 
 FText FXD_EveryYearConfig::ToText() const
 {
-	int Month, Day, Hour, Minute;
-	GetConfig(Month, Day, Hour, Minute);
-	return FText::Format(LOCTEXT("{0}月 {1}日 {2}时 {3}分", "{0}月 {1}日 {2}时 {3}分"), Month, Day, Hour, Minute);
+	int TheMonth, Day, Hour, Minute;
+	GetConfig(TheMonth, Day, Hour, Minute);
+	return FText::Format(LOCTEXT("{0}月 {1}日 {2}时 {3}分", "{0}月 {1}日 {2}时 {3}分"), TheMonth, Day, Hour, Minute);
 }
 
 FString FXD_EveryYearConfig::ToString() const
