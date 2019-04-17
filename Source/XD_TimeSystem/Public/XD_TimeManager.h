@@ -9,6 +9,7 @@
 #include <Engine/LatentActionManager.h>
 #include "XD_TimeManager.generated.h"
 
+DECLARE_DELEGATE(FXD_GameTimeNativeDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class XD_TIMESYSTEM_API UXD_TimeManager : public UActorComponent, public IXD_SaveGameInterface
@@ -79,10 +80,11 @@ public:
 
 	//Native版本
 public:
-	DECLARE_DELEGATE(FXD_GameTimeNativeDelegate);
 	TMap<FXD_SpecialTimeConfig, TArray<FXD_GameTimeNativeDelegate>> NativeSpecialTimeEvents;
 
 	FXD_NativeSpecialGameTimeHandle AddNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate);
+
+	FXD_NativeSpecialGameTimeHandle AddNativeDelayTimeEvent(const FXD_GameTimeSpan& TimeSpan, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate);
 
 	void RemoveNativeSpecialGameTimeEvent(FXD_NativeSpecialGameTimeHandle& Handle);
 

@@ -411,6 +411,10 @@ private:
 	int64 ToEveryWeekTicks() const { return (GetTicks() / FXD_GameTimeConfigConfig::Rate) % FXD_GameTimeConfigConfig::TicksPerWeek; }
 	int64 EveryMonthToCurrentTicks(const FXD_EveryMonthConfig& EveryMonthConfig) const;
 	int64 EveryYearToCurrentTicks(const FXD_EveryYearConfig& EveryYearConfig) const;
+
+public:
+	//转换为最低精度为分钟的当前时间
+	FXD_GameTime ToGameTimeMinuteAccuracy() const;
 public:
 	bool InHourRange(const FXD_EveryHourConfig& StartTime, const FXD_EveryHourConfig& EndTime) const;
 	bool operator==(const FXD_EveryHourConfig& Other) const { return ToEveryHourTicks() == Other.Ticks; }

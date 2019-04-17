@@ -48,6 +48,11 @@ int64 FXD_GameTime::EveryYearToCurrentTicks(const FXD_EveryYearConfig& EveryYear
 	return FXD_GameTime(GetYear(), Month, Day, Hour, Minute).GetTicks();
 }
 
+FXD_GameTime FXD_GameTime::ToGameTimeMinuteAccuracy() const
+{
+	return GetTicks() / FXD_GameTimeConfig::TicksPerMinute * FXD_GameTimeConfig::TicksPerMinute;
+}
+
 bool FXD_GameTime::InHourRange(const FXD_EveryHourConfig& StartTime, const FXD_EveryHourConfig& EndTime) const
 {
 	return InTimeRange(ToEveryHourTicks(), StartTime.Ticks, EndTime.Ticks);

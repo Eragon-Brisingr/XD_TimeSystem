@@ -108,6 +108,11 @@ FXD_NativeSpecialGameTimeHandle UXD_TimeManager::AddNativeSpecialGameTimeEvent(c
 	return Handle;
 }
 
+FXD_NativeSpecialGameTimeHandle UXD_TimeManager::AddNativeDelayTimeEvent(const FXD_GameTimeSpan& TimeSpan, const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate)
+{
+	return AddNativeSpecialGameTimeEvent(CurrentTime.ToGameTimeMinuteAccuracy() + FXD_GameTimeSpan(TimeSpan.GetDays(), TimeSpan.GetHours(), TimeSpan.GetHours()), GameTimeNativeDelegate);
+}
+
 void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const UObject* Object)
 {
 	if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(SpecialTimeConfig))
