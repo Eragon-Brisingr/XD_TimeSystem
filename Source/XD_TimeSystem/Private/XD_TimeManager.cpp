@@ -131,8 +131,6 @@ void UXD_TimeManager::RemoveNativeSpecialGameTimeEvent(FXD_NativeSpecialGameTime
 	{
 		if (TArray<FXD_GameTimeNativeDelegate>* Events = NativeSpecialTimeEvents.Find(Handle.SpecialTimeConfig))
 		{
-			Handle.DelegateHandle.Reset();
-
 			Events->RemoveAll([&](const FXD_GameTimeNativeDelegate& GameTimeNativeDelegate) {return GameTimeNativeDelegate.GetHandle() == Handle.DelegateHandle; });
 			if (Events->Num() == 0)
 			{
