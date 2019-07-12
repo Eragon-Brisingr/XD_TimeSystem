@@ -799,7 +799,7 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 
 void FXD_SpecialTimeConfig_Customization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = FPropertyCustomizeHelper::GetPropertyHandleByName(StructPropertyHandle, GET_MEMBER_NAME_STRING_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
+	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = FPropertyCustomizeHelper::GetPropertyHandleByName(StructPropertyHandle, GET_MEMBER_NAME_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
 	HeaderRow.FilterString(StructPropertyHandle->GetPropertyDisplayName())
 		.NameContent()
 		[
@@ -814,7 +814,7 @@ void FXD_SpecialTimeConfig_Customization::CustomizeHeader(TSharedRef<class IProp
 
 void FXD_SpecialTimeConfig_Customization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = FPropertyCustomizeHelper::GetPropertyHandleByName(StructPropertyHandle, GET_MEMBER_NAME_STRING_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
+	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = FPropertyCustomizeHelper::GetPropertyHandleByName(StructPropertyHandle, GET_MEMBER_NAME_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
 	StructBuilder.AddCustomRow(FText::GetEmpty())
 		.ValueContent()
 		.HAlign(HAlign_Fill)
