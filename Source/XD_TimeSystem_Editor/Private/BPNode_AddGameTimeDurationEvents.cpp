@@ -5,14 +5,17 @@
 #include <EdGraphSchema_K2.h>
 #include <BlueprintActionDatabaseRegistrar.h>
 #include <BlueprintNodeSpawner.h>
-#include "XD_TimeSystemFunctionLibrary.h"
-#include "XD_TimeSystemType.h"
 #include <BlueprintEditorUtils.h>
 #include <K2Node_CallFunction.h>
 #include <K2Node_CustomEvent.h>
 #include <KismetCompiler.h>
-#include "XD_TimeSystem_EditorUtility.h"
 #include <K2Node_Knot.h>
+#include <ToolMenu.h>
+#include <ToolMenuSection.h>
+
+#include "XD_TimeSystemFunctionLibrary.h"
+#include "XD_TimeSystemType.h"
+#include "XD_TimeSystem_EditorUtility.h"
 
 #define LOCTEXT_NAMESPACE "TimeSystem_Editor"
 
@@ -113,39 +116,39 @@ void UBPNode_AddGameTimeDurationEvents::ExpandNode(class FKismetCompilerContext&
 	}
 }
 
-void UBPNode_AddGameTimeDurationEvents::GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const
+void UBPNode_AddGameTimeDurationEvents::GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const
 {
-	Super::GetContextMenuActions(Context);
+	Super::GetNodeContextMenuActions(Menu, Context);
 
-	if (!Context.bIsDebugging)
+	if (!Context->bIsDebugging)
 	{
-		Context.MenuBuilder->BeginSection(NAME_None, LOCTEXT("时间系统", "时间系统"));
+		FToolMenuSection& Section = Menu->AddSection(TEXT("GameTimeSystem"), LOCTEXT("时间系统", "时间系统"));
 
-		if (Context.Pin != NULL)
+		if (Context->Pin != nullptr)
 		{
 			// we only do this for normal BlendList/BlendList by enum, BlendList by Bool doesn't support add/remove pins
-			if (Context.Pin->Direction == EGPD_Output && EventsNumber > 2 && Context.Pin->GetDisplayName().ToString().Contains(EventName))
+			if (Context->Pin->Direction == EGPD_Output && EventsNumber > 2 && Context->Pin->GetDisplayName().ToString().Contains(EventName))
 			{
-				Context.MenuBuilder->AddMenuEntry(
+				Section.AddMenuEntry(
+					TEXT("RemoveTimeEvent"),
 					LOCTEXT("移除该事件", "移除该事件"),
 					LOCTEXT("移除该事件", "移除该事件"),
 					FSlateIcon(),
 					FUIAction(
-						FExecuteAction::CreateUObject(this, &UBPNode_AddGameTimeDurationEvents::RemoveEvent, const_cast<UEdGraphPin*>(Context.Pin))
+						FExecuteAction::CreateUObject(this, &UBPNode_AddGameTimeDurationEvents::RemoveEvent, const_cast<UEdGraphPin*>(Context->Pin))
 					)
 				);
 			}
 		}
-		Context.MenuBuilder->AddMenuEntry(
+		Section.AddMenuEntry(
+			TEXT("RemoveTimeEvent"),
 			LOCTEXT("增加时间事件", "增加时间事件"),
 			LOCTEXT("增加时间事件", "增加时间事件"),
 			FSlateIcon(),
 			FUIAction(
-				FExecuteAction::CreateUObject(this, &UBPNode_AddGameTimeDurationEvents::AddEvent, const_cast<UEdGraphPin*>(Context.Pin))
+				FExecuteAction::CreateUObject(this, &UBPNode_AddGameTimeDurationEvents::AddEvent, const_cast<UEdGraphPin*>(Context->Pin))
 			)
 		);
-
-		Context.MenuBuilder->EndSection();
 	}
 }
 

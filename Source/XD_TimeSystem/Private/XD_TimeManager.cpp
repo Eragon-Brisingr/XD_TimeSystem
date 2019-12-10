@@ -21,7 +21,7 @@ UXD_TimeManager::UXD_TimeManager()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 

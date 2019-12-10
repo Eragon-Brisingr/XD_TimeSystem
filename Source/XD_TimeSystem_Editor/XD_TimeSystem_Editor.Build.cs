@@ -43,6 +43,7 @@ public class XD_TimeSystem_Editor : ModuleRules
                 "BlueprintGraph",
                 "KismetCompiler",
                 "UnrealEd",
+                "ToolMenus",
 
                 "XD_TimeSystem",
                 "XD_UnrealLibraryEx",

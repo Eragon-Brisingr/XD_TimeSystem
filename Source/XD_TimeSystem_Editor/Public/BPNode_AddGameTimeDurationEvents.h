@@ -15,29 +15,19 @@ class XD_TIMESYSTEM_EDITOR_API UBPNode_AddGameTimeDurationEvents : public UK2Nod
 	GENERATED_BODY()
 public:
  	// UEdGraphNode interface
- 	virtual void AllocateDefaultPins() override;
- 	//virtual void PostLoad() override;
- 	//virtual void PostReconstructNode() override;
- 	//节点名
- 	//virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
- 	//virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
- 	//virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
- 	// End of UEdGraphNode interface
+ 	void AllocateDefaultPins() override;
  
  	// UK2Node interface
  	//重写该函数向编辑器注册该节点。
- 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const;
+ 	void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const;
  	//展开节点[连接里面的多个蓝图节点]
- 	virtual void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
+ 	void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
  
  	//右键菜单发生的事
- 	virtual void GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const override;
+	void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
  	//报错
- 	//virtual void ValidateNodeDuringCompilation(class FCompilerResultsLog& MessageLog) const override;
- 	virtual FName GetCornerIcon() const { return TEXT("Graph.Latent.LatentIcon"); }
- 	virtual FText GetMenuCategory() const override;
- 	//virtual FText GetTooltipText() const override;
- 	//virtual FText GetKeywords() const override;
+ 	FName GetCornerIcon() const override { return TEXT("Graph.Latent.LatentIcon"); }
+ 	FText GetMenuCategory() const override;
  	// End of UK2Node interface
 	
 public:
