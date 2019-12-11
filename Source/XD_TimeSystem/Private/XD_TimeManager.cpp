@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "XD_TimeManager.h"
-#include <UnrealNetwork.h>
+#include <Net/UnrealNetwork.h>
 #include "XD_TimeSystemUtility.h"
 #include "XD_TimeSystem_GameStateInterface.h"
 #include <GameFramework/GameStateBase.h>

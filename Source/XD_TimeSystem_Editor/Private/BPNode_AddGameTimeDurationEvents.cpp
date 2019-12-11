@@ -5,7 +5,7 @@
 #include <EdGraphSchema_K2.h>
 #include <BlueprintActionDatabaseRegistrar.h>
 #include <BlueprintNodeSpawner.h>
-#include <BlueprintEditorUtils.h>
+#include <Kismet2/BlueprintEditorUtils.h>
 #include <K2Node_CallFunction.h>
 #include <K2Node_CustomEvent.h>
 #include <KismetCompiler.h>

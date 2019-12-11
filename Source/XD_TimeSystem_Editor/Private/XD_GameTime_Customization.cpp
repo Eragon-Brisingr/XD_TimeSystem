@@ -2,13 +2,14 @@
 
 #include "XD_GameTime_Customization.h"
 #include <DetailWidgetRow.h>
+#include <Widgets/SBoxPanel.h>
+#include <Widgets/Input/SNumericEntryBox.h>
+#include <IDetailChildrenBuilder.h>
+#include <Widgets/Input/STextComboBox.h>
+
 #include "XD_PropertyCustomizationEx.h"
 #include "XD_TimeSystemType.h"
-#include <SBoxPanel.h>
-#include <SNumericEntryBox.h>
-#include <IDetailChildrenBuilder.h>
 #include "XD_MacrosLibrary.h"
-#include <STextComboBox.h>
 
 #define LOCTEXT_NAMESPACE "XD_TimeSystem_Editor"
 
