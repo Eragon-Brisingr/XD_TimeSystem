@@ -23,8 +23,13 @@ class XD_TIMESYSTEM_API IXD_GameTimeEventInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = "游戏|时间系统")
-	void ConfigGameTimeEvent();
-	void ConfigGameTimeEvent_Implementation(){}
+	void RegisterGameTimeEvent();
+	void RegisterGameTimeEvent_Implementation() {}
 
-	static void InvokeConfigGameTimeEvent(class AActor* Actor);
+	UFUNCTION(BlueprintNativeEvent, Category = "游戏|时间系统")
+	void UnregisterGameTimeEvent();
+	void UnregisterGameTimeEvent_Implementation() {}
+
+	static void InvokeRegisterGameTimeEvent(class AActor* Actor);
+	static void InvokeUnregisterGameTimeEvent(class AActor* Actor);
 };

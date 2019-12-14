@@ -46,7 +46,7 @@ void UXD_TimeManager::InitTimeEvents()
 		AActor* Actor = *It;
 		if (!Actor->IsPendingKill())
 		{
-			IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+			IXD_GameTimeEventInterface::InvokeRegisterGameTimeEvent(Actor);
 		}
 	}
 	OnActorSpawnedHandle = GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Actor)
@@ -54,7 +54,7 @@ void UXD_TimeManager::InitTimeEvents()
 #if WITH_EDITOR
 		FEditorScriptExecutionGuard ScriptGuard;
 #endif
-		IXD_GameTimeEventInterface::InvokeConfigGameTimeEvent(Actor);
+		IXD_GameTimeEventInterface::InvokeRegisterGameTimeEvent(Actor);
 	}));
 }
 
@@ -413,156 +413,156 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 	return nullptr;
 }
 
-void UXD_TimeManager::AddEveryHourEvent_Instant(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::AddEveryHourEvent_Instant(const FXD_EveryHourConfig& Date, const FXD_GameTimeEvent& EveryHourEvent)
 {
-	EveryHourEvents.FindOrAdd(EveryHourConfig).Add(EveryHourEvent);
+	EveryHourEvents.FindOrAdd(Date).Add(EveryHourEvent);
 }
 
-void UXD_TimeManager::AddEveryDayEvent_Instant(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent)
+void UXD_TimeManager::AddEveryDayEvent_Instant(const FXD_EveryDayConfig& Date, const FXD_GameTimeEvent& EveryDayEvent)
 {
-	EveryDayEvents.FindOrAdd(EveryDayConfig).Add(EveryDayEvent);
+	EveryDayEvents.FindOrAdd(Date).Add(EveryDayEvent);
 }
 
-void UXD_TimeManager::AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
+void UXD_TimeManager::AddEveryWeekEvent_Instant(const FXD_EveryWeekConfig& Date, const FXD_GameTimeEvent& EveryWeekDayEvent)
 {
-	EveryWeekDayEvents.FindOrAdd(EveryWeekConfig).Add(EveryWeekDayEvent);
+	EveryWeekDayEvents.FindOrAdd(Date).Add(EveryWeekDayEvent);
 }
 
-void UXD_TimeManager::AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent)
+void UXD_TimeManager::AddEveryMonthEvent_Instant(const FXD_EveryMonthConfig& Date, const FXD_GameTimeEvent& EveryMonthEvent)
 {
-	EveryMonthEvents.FindOrAdd(EveryMonthConfig).Add(EveryMonthEvent);
+	EveryMonthEvents.FindOrAdd(Date).Add(EveryMonthEvent);
 }
 
-void UXD_TimeManager::AddEveryYearEvent_Instant(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent)
+void UXD_TimeManager::AddEveryYearEvent_Instant(const FXD_EveryYearConfig& Date, const FXD_GameTimeEvent& EveryYearEvent)
 {
-	EveryYearEvents.FindOrAdd(EveryYearConfig).Add(EveryYearEvent);
+	EveryYearEvents.FindOrAdd(Date).Add(EveryYearEvent);
 }
 
-void UXD_TimeManager::AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent)
+void UXD_TimeManager::AddSpecialTimeEvent_Instant(const FXD_SpecialTimeConfig& Date, const FXD_GameTimeEvent& SpecialTimeEvent)
 {
-	SpecialTimeEvents.FindOrAdd(SpecialTimeConfig).Add(SpecialTimeEvent);
+	SpecialTimeEvents.FindOrAdd(Date).Add(SpecialTimeEvent);
 }
 
-void UXD_TimeManager::RemoveEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent)
+void UXD_TimeManager::RemoveEveryHourEvent(const FXD_EveryHourConfig& Date, const FXD_GameTimeEvent& EveryHourEvent)
 {
-	if (TArray<FXD_GameTimeEvent>* Events = EveryHourEvents.Find(EveryHourConfig))
+	if (TArray<FXD_GameTimeEvent>* Events = EveryHourEvents.Find(Date))
 	{
 		Events->RemoveSingle(EveryHourEvent);
 		if (Events->Num() == 0)
 		{
-			EveryHourEvents.Remove(EveryHourConfig);
+			EveryHourEvents.Remove(Date);
 		}
 	}
 }
 
-void UXD_TimeManager::RemoveEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent)
+void UXD_TimeManager::RemoveEveryDayEvent(const FXD_EveryDayConfig& Date, const FXD_GameTimeEvent& EveryDayEvent)
 {
-	if (TArray<FXD_GameTimeEvent>* Events = EveryDayEvents.Find(EveryDayConfig))
+	if (TArray<FXD_GameTimeEvent>* Events = EveryDayEvents.Find(Date))
 	{
 		Events->RemoveSingle(EveryDayEvent);
 		if (Events->Num() == 0)
 		{
-			EveryDayEvents.Remove(EveryDayConfig);
+			EveryDayEvents.Remove(Date);
 		}
 	}
 }
 
-void UXD_TimeManager::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent)
+void UXD_TimeManager::RemoveEveryWeekEvent(const FXD_EveryWeekConfig& Date, const FXD_GameTimeEvent& EveryWeekDayEvent)
 {
-	if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekConfig))
+	if (TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(Date))
 	{
 		Events->RemoveSingle(EveryWeekDayEvent);
 		if (Events->Num() == 0)
 		{
-			EveryWeekDayEvents.Remove(EveryWeekConfig);
+			EveryWeekDayEvents.Remove(Date);
 		}
 	}
 }
 
-void UXD_TimeManager::RemoveEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent)
+void UXD_TimeManager::RemoveEveryMonthEvent(const FXD_EveryMonthConfig& Date, const FXD_GameTimeEvent& EveryMonthEvent)
 {
-	if (TArray<FXD_GameTimeEvent>* Events = EveryMonthEvents.Find(EveryMonthConfig))
+	if (TArray<FXD_GameTimeEvent>* Events = EveryMonthEvents.Find(Date))
 	{
 		Events->RemoveSingle(EveryMonthEvent);
 		if (Events->Num() == 0)
 		{
-			EveryMonthEvents.Remove(EveryMonthConfig);
+			EveryMonthEvents.Remove(Date);
 		}
 	}
 }
 
-void UXD_TimeManager::RemoveEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent)
+void UXD_TimeManager::RemoveEveryYearEvent(const FXD_EveryYearConfig& Date, const FXD_GameTimeEvent& EveryYearEvent)
 {
-	if (TArray<FXD_GameTimeEvent>* Events = EveryYearEvents.Find(EveryYearConfig))
+	if (TArray<FXD_GameTimeEvent>* Events = EveryYearEvents.Find(Date))
 	{
 		Events->RemoveSingle(EveryYearEvent);
 		if (Events->Num() == 0)
 		{
-			EveryYearEvents.Remove(EveryYearConfig);
+			EveryYearEvents.Remove(Date);
 		}
 	}
 }
 
-void UXD_TimeManager::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent)
+void UXD_TimeManager::RemoveSpecialTimeEvent(const FXD_SpecialTimeConfig& Date, const FXD_GameTimeEvent& SpecialTimeEvent)
 {
-	if (TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(SpecialTimeConfig))
+	if (TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(Date))
 	{
 		Events->RemoveSingle(SpecialTimeEvent);
 		if (Events->Num() == 0)
 		{
-			SpecialTimeEvents.Remove(SpecialTimeConfig);
+			SpecialTimeEvents.Remove(Date);
 		}
 	}
 }
 
-bool UXD_TimeManager::ContainsEveryHourEvent(const FXD_EveryHourConfig& EveryHourConfig, const FXD_GameTimeEvent& EveryHourEvent) const
+bool UXD_TimeManager::ContainsEveryHourEvent(const FXD_EveryHourConfig& Date, const FXD_GameTimeEvent& EveryHourEvent) const
 {
-	if (const TArray<FXD_GameTimeEvent>* Events = EveryHourEvents.Find(EveryHourConfig))
+	if (const TArray<FXD_GameTimeEvent>* Events = EveryHourEvents.Find(Date))
 	{
 		return Events->Contains(EveryHourEvent);
 	}
 	return false;
 }
 
-bool UXD_TimeManager::ContainsEveryDayEvent(const FXD_EveryDayConfig& EveryDayConfig, const FXD_GameTimeEvent& EveryDayEvent) const
+bool UXD_TimeManager::ContainsEveryDayEvent(const FXD_EveryDayConfig& Date, const FXD_GameTimeEvent& EveryDayEvent) const
 {
-	if (const TArray<FXD_GameTimeEvent>* Events = EveryDayEvents.Find(EveryDayConfig))
+	if (const TArray<FXD_GameTimeEvent>* Events = EveryDayEvents.Find(Date))
 	{
 		return Events->Contains(EveryDayEvent);
 	}
 	return false;
 }
 
-bool UXD_TimeManager::ContainsEveryWeekEvent(const FXD_EveryWeekConfig& EveryWeekConfig, const FXD_GameTimeEvent& EveryWeekDayEvent) const
+bool UXD_TimeManager::ContainsEveryWeekEvent(const FXD_EveryWeekConfig& Date, const FXD_GameTimeEvent& EveryWeekDayEvent) const
 {
-	if (const TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(EveryWeekConfig))
+	if (const TArray<FXD_GameTimeEvent>* Events = EveryWeekDayEvents.Find(Date))
 	{
 		return Events->Contains(EveryWeekDayEvent);
 	}
 	return false;
 }
 
-bool UXD_TimeManager::ContainsEveryMonthEvent(const FXD_EveryMonthConfig& EveryMonthConfig, const FXD_GameTimeEvent& EveryMonthEvent) const
+bool UXD_TimeManager::ContainsEveryMonthEvent(const FXD_EveryMonthConfig& Date, const FXD_GameTimeEvent& EveryMonthEvent) const
 {
-	if (const TArray<FXD_GameTimeEvent>* Events = EveryMonthEvents.Find(EveryMonthConfig))
+	if (const TArray<FXD_GameTimeEvent>* Events = EveryMonthEvents.Find(Date))
 	{
 		return Events->Contains(EveryMonthEvent);
 	}
 	return false;
 }
 
-bool UXD_TimeManager::ContainsEveryYearEvent(const FXD_EveryYearConfig& EveryYearConfig, const FXD_GameTimeEvent& EveryYearEvent) const
+bool UXD_TimeManager::ContainsEveryYearEvent(const FXD_EveryYearConfig& Date, const FXD_GameTimeEvent& EveryYearEvent) const
 {
-	if (const TArray<FXD_GameTimeEvent>* Events = EveryYearEvents.Find(EveryYearConfig))
+	if (const TArray<FXD_GameTimeEvent>* Events = EveryYearEvents.Find(Date))
 	{
 		return Events->Contains(EveryYearEvent);
 	}
 	return false;
 }
 
-bool UXD_TimeManager::ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& SpecialTimeConfig, const FXD_GameTimeEvent& SpecialTimeEvent) const
+bool UXD_TimeManager::ContainsSpecialTimeEvent(const FXD_SpecialTimeConfig& Date, const FXD_GameTimeEvent& SpecialTimeEvent) const
 {
-	if (const TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(SpecialTimeConfig))
+	if (const TArray<FXD_GameTimeEvent>* Events = SpecialTimeEvents.Find(Date))
 	{
 		return Events->Contains(SpecialTimeEvent);
 	}

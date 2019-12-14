@@ -6,12 +6,15 @@
 #include <BlueprintActionDatabaseRegistrar.h>
 #include <BlueprintNodeSpawner.h>
 #include <Kismet2/BlueprintEditorUtils.h>
-#include <K2Node_CallFunction.h>
-#include <K2Node_CustomEvent.h>
 #include <KismetCompiler.h>
-#include <K2Node_Knot.h>
 #include <ToolMenu.h>
 #include <ToolMenuSection.h>
+#include <K2Node_CallFunction.h>
+#include <K2Node_CustomEvent.h>
+#include <K2Node_Knot.h>
+#include <K2Node_TemporaryVariable.h>
+#include <K2Node_IfThenElse.h>
+#include <K2Node_AssignmentStatement.h>
 
 #include "XD_TimeSystemFunctionLibrary.h"
 #include "XD_TimeSystemType.h"
@@ -19,24 +22,30 @@
 
 #define LOCTEXT_NAMESPACE "TimeSystem_Editor"
 
-const FString StartParamName = TEXT("Start");
-const FString EndParamName = TEXT("End");
-const FString EventName = TEXT("Event");
+FName UBPNode_AddGameTimeDurationEvents::BindPinName = TEXT("激活时间事件绑定");
+FName UBPNode_AddGameTimeDurationEvents::UnbindPinName = TEXT("取消时间事件绑定");
+FName UBPNode_AddGameTimeDurationEvents::IsBindPinName = TEXT("IsActived");
 
-const FName GetStartPinName(int32 Idx)
+FString UBPNode_AddGameTimeDurationEvents::EventName = TEXT("事件");
+FString UBPNode_AddGameTimeDurationEvents::StartParamName = TEXT("Start");
+FString UBPNode_AddGameTimeDurationEvents::EndParamName = TEXT("End");
+FString UBPNode_AddGameTimeDurationEvents::EventParamName = TEXT("Event");
+
+FName UBPNode_AddGameTimeDurationEvents::GetStartPinName(int32 Idx)
 {
-	return *FString::Printf(TEXT("[%d]%s"), Idx, *StartParamName);
+	return *FString::Printf(TEXT("事件[%d]开始时间"), Idx);
 }
 
-const FName GetEventPinName(int32 Idx)
+FName UBPNode_AddGameTimeDurationEvents::GetEventPinName(int32 Idx)
 {
-	return *FString::Printf(TEXT("[%d]%s"), Idx, *EventName);
+	return *FString::Printf(TEXT("事件[%d]"), Idx, *EventName);
 }
 
 void UBPNode_AddGameTimeDurationEvents::AllocateDefaultPins()
 {
-	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, NAME_None, UEdGraphSchema_K2::PN_Execute);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, NAME_None, UEdGraphSchema_K2::PN_Then);
+	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, NAME_None, BindPinName);
+	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, NAME_None, UnbindPinName);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Boolean, NAME_None, IsBindPinName);
 
 	for (int i = 1; i <= EventsNumber; ++i)
 	{
@@ -61,8 +70,31 @@ void UBPNode_AddGameTimeDurationEvents::GetMenuActions(FBlueprintActionDatabaseR
 
 void UBPNode_AddGameTimeDurationEvents::ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
-	UEdGraphPin* PreThenPin = nullptr;
+	check(AddGameTimeDurationEventsFunction && RemoveGameTimeDurationEventsFunction);
 
+	UK2Node_TemporaryVariable* DoOnceVar = CompilerContext.SpawnIntermediateNode<UK2Node_TemporaryVariable>(this, SourceGraph);
+	DoOnceVar->VariableType = FEdGraphPinType(UEdGraphSchema_K2::PC_Boolean, NAME_None, nullptr, EPinContainerType::None, false, FEdGraphTerminalType());
+	DoOnceVar->bIsPersistent = false;
+	DoOnceVar->AllocateDefaultPins();
+	CompilerContext.MovePinLinksToIntermediate(*FindPinChecked(IsBindPinName), *DoOnceVar->GetVariablePin());
+
+	UEdGraphPin* PreBindEventThenPin = nullptr;
+	UK2Node_IfThenElse* BindEventIfThenElse = CompilerContext.SpawnIntermediateNode<UK2Node_IfThenElse>(this, SourceGraph);
+	BindEventIfThenElse->AllocateDefaultPins();
+	BindEventIfThenElse->GetConditionPin()->MakeLinkTo(DoOnceVar->GetVariablePin());
+
+	CompilerContext.MovePinLinksToIntermediate(*FindPinChecked(BindPinName), *BindEventIfThenElse->GetExecPin());
+	PreBindEventThenPin = BindEventIfThenElse->GetElsePin();
+
+	UK2Node_AssignmentStatement* BindEventAssignment = CompilerContext.SpawnIntermediateNode<UK2Node_AssignmentStatement>(this, SourceGraph);
+	BindEventAssignment->AllocateDefaultPins();
+	BindEventAssignment->GetVariablePin()->MakeLinkTo(DoOnceVar->GetVariablePin());
+	BindEventAssignment->PostReconstructNode();
+	BindEventAssignment->GetValuePin()->DefaultValue = TEXT("true");
+	PreBindEventThenPin->MakeLinkTo(BindEventAssignment->GetExecPin());
+	PreBindEventThenPin = BindEventAssignment->GetThenPin();
+
+	TArray<UK2Node_CustomEvent*> TimeEvents;
 	TArray<UK2Node_CallFunction*> AddTimeEventFunctions;
 	for (int32 Idx = 1; Idx <= EventsNumber; ++Idx)
 	{
@@ -76,44 +108,69 @@ void UBPNode_AddGameTimeDurationEvents::ExpandNode(class FKismetCompilerContext&
 		UK2Node_CustomEvent* TimeEvent = CompilerContext.SpawnIntermediateEventNode<UK2Node_CustomEvent>(this, AddTimeEventFunction->FindPinChecked(EventParamName), SourceGraph);
 		TimeEvent->CustomFunctionName = *FString::Printf(TEXT("%s_[%s]_[%d]"), *GetNodeTitle(ENodeTitleType::FullTitle).ToString(), *CompilerContext.GetGuid(this), Idx + 1);
 		TimeEvent->AllocateDefaultPins();
+		TimeEvents.Add(TimeEvent);
 
 		TimeEvent->FindPinChecked(UK2Node_CustomEvent::DelegateOutputName)->MakeLinkTo(AddTimeEventFunction->FindPinChecked(EventParamName));
 		
 		CompilerContext.MovePinLinksToIntermediate(*FindPinChecked(GetEventPinName(Idx)), *CompilerContext.GetSchema()->FindExecutionPin(*TimeEvent, EGPD_Output));
 
-		if (Idx == 1)
-		{
-			CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *AddTimeEventFunction->GetExecPin());
-		}
-		else
-		{
-			PreThenPin->MakeLinkTo(AddTimeEventFunction->GetExecPin());
-		}
-		PreThenPin = AddTimeEventFunction->GetThenPin();
+		PreBindEventThenPin->MakeLinkTo(AddTimeEventFunction->GetExecPin());
+		PreBindEventThenPin = AddTimeEventFunction->GetThenPin();
 	}
-	CompilerContext.MovePinLinksToIntermediate(*FindPinChecked(UEdGraphSchema_K2::PN_Then), *PreThenPin);
 
-	TArray<UK2Node_Knot*> StartTimePins;
+	TArray<UK2Node_Knot*> StartTimeKnots;
 	for (int32 Idx = 1; Idx <= EventsNumber; ++Idx)
 	{
 		UK2Node_Knot* RerouteNode = CompilerContext.SpawnIntermediateNode<UK2Node_Knot>(this, SourceGraph);
 		RerouteNode->AllocateDefaultPins();
 		CompilerContext.MovePinLinksToIntermediate(*FindPinChecked(GetStartPinName(Idx)), *RerouteNode->GetInputPin());
-		StartTimePins.Add(RerouteNode);
+		StartTimeKnots.Add(RerouteNode);
 	}
-
 	for (int32 Idx = 0; Idx < EventsNumber; ++Idx)
 	{
 		if (Idx == 0)
 		{
-			StartTimePins[Idx]->GetOutputPin()->MakeLinkTo(AddTimeEventFunctions[EventsNumber - 1]->FindPinChecked(EndParamName));
+			StartTimeKnots[Idx]->GetOutputPin()->MakeLinkTo(AddTimeEventFunctions[EventsNumber - 1]->FindPinChecked(EndParamName));
 		}
 		else
 		{
-			StartTimePins[Idx]->GetOutputPin()->MakeLinkTo(AddTimeEventFunctions[Idx - 1]->FindPinChecked(EndParamName));
+			StartTimeKnots[Idx]->GetOutputPin()->MakeLinkTo(AddTimeEventFunctions[Idx - 1]->FindPinChecked(EndParamName));
 		}
-		StartTimePins[Idx]->GetOutputPin()->MakeLinkTo(AddTimeEventFunctions[Idx]->FindPinChecked(StartParamName));
+		StartTimeKnots[Idx]->GetOutputPin()->MakeLinkTo(AddTimeEventFunctions[Idx]->FindPinChecked(StartParamName));
 	}
+
+	UEdGraphPin* PreUnbindThenPin = nullptr;
+	UK2Node_IfThenElse* UnbindEventIfThenElse = CompilerContext.SpawnIntermediateNode<UK2Node_IfThenElse>(this, SourceGraph);
+	UnbindEventIfThenElse->AllocateDefaultPins(); 
+	UnbindEventIfThenElse->GetConditionPin()->MakeLinkTo(DoOnceVar->GetVariablePin());
+	CompilerContext.MovePinLinksToIntermediate(*FindPinChecked(UnbindPinName), *UnbindEventIfThenElse->GetExecPin());
+	PreUnbindThenPin = UnbindEventIfThenElse->GetThenPin();
+
+	UK2Node_AssignmentStatement* UnbindEventAssignment = CompilerContext.SpawnIntermediateNode<UK2Node_AssignmentStatement>(this, SourceGraph);
+	UnbindEventAssignment->AllocateDefaultPins();
+	UnbindEventAssignment->GetVariablePin()->MakeLinkTo(DoOnceVar->GetVariablePin());
+	UnbindEventAssignment->PostReconstructNode();
+	UnbindEventAssignment->GetValuePin()->DefaultValue = TEXT("false");
+	PreUnbindThenPin->MakeLinkTo(UnbindEventAssignment->GetExecPin());
+	PreUnbindThenPin = UnbindEventAssignment->GetThenPin();
+
+	for (int32 Idx = 0; Idx < EventsNumber; ++Idx)
+	{
+		UK2Node_CallFunction* RemoveTimeEventFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+		RemoveTimeEventFunction->SetFromFunction(RemoveGameTimeDurationEventsFunction);
+		RemoveTimeEventFunction->AllocateDefaultPins();
+		StartTimeKnots[Idx]->GetOutputPin()->MakeLinkTo(RemoveTimeEventFunction->FindPinChecked(TEXT("Date")));
+		TimeEvents[Idx]->FindPinChecked(UK2Node_CustomEvent::DelegateOutputName)->MakeLinkTo(RemoveTimeEventFunction->FindPinChecked(EventParamName));
+
+		PreUnbindThenPin->MakeLinkTo(RemoveTimeEventFunction->GetExecPin());
+		PreUnbindThenPin = RemoveTimeEventFunction->GetThenPin();
+	}
+}
+
+bool UBPNode_AddGameTimeDurationEvents::IsCompatibleWithGraph(const UEdGraph* TargetGraph) const
+{
+	EGraphType GraphType = TargetGraph->GetSchema()->GetGraphType(TargetGraph);
+	return Super::IsCompatibleWithGraph(TargetGraph) && GraphType == EGraphType::GT_Ubergraph || GraphType == EGraphType::GT_Macro;
 }
 
 void UBPNode_AddGameTimeDurationEvents::GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const
@@ -207,6 +264,7 @@ void UBPNode_AddGameTimeDurationEvents::RemoveEvent(UEdGraphPin* Pin)
 UBPNode_AddEveryHourCircleEvents::UBPNode_AddEveryHourCircleEvents()
 {
 	AddGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, AddEveryHourEvent_Duration));
+	RemoveGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, RemoveEveryHourEvent));
 	GameTimeConfigType = FXD_EveryHourConfig::StaticStruct();
 }
 
@@ -218,6 +276,7 @@ FText UBPNode_AddEveryHourCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleT
 UBPNode_AddEveryDayCircleEvents::UBPNode_AddEveryDayCircleEvents()
 {
 	AddGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, AddEveryDayEvent_Duration));
+	RemoveGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, RemoveEveryDayEvent));
 	GameTimeConfigType = FXD_EveryDayConfig::StaticStruct();
 }
 
@@ -229,6 +288,7 @@ FText UBPNode_AddEveryDayCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleTy
 UBPNode_AddEveryWeekCircleEvents::UBPNode_AddEveryWeekCircleEvents()
 {
 	AddGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, AddEveryWeekEvent_Duration));
+	RemoveGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, RemoveEveryWeekEvent));
 	GameTimeConfigType = FXD_EveryWeekConfig::StaticStruct();
 }
 
@@ -240,6 +300,7 @@ FText UBPNode_AddEveryWeekCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleT
 UBPNode_AddEveryMonthCircleEvents::UBPNode_AddEveryMonthCircleEvents()
 {
 	AddGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, AddEveryMonthEvent_Duration));
+	RemoveGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, RemoveEveryMonthEvent));
 	GameTimeConfigType = FXD_EveryMonthConfig::StaticStruct();
 }
 
@@ -251,6 +312,7 @@ FText UBPNode_AddEveryMonthCircleEvents::GetNodeTitle(ENodeTitleType::Type Title
 UBPNode_AddEveryYearCircleEvents::UBPNode_AddEveryYearCircleEvents()
 {
 	AddGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, AddEveryYearEvent_Duration));
+	RemoveGameTimeDurationEventsFunction = UXD_TimeManagerFunctionLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UXD_TimeManagerFunctionLibrary, RemoveEveryYearEvent));
 	GameTimeConfigType = FXD_EveryYearConfig::StaticStruct();
 }
 

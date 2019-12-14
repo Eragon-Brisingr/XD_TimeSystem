@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS(abstract)
 class XD_TIMESYSTEM_EDITOR_API UBPNode_AddGameTimeDurationEvents : public UK2Node
 {
 	GENERATED_BODY()
@@ -18,14 +18,11 @@ public:
  	void AllocateDefaultPins() override;
  
  	// UK2Node interface
- 	//重写该函数向编辑器注册该节点。
  	void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const;
- 	//展开节点[连接里面的多个蓝图节点]
  	void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
- 
- 	//右键菜单发生的事
+	bool IsCompatibleWithGraph(const UEdGraph* TargetGraph) const override;
 	void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
- 	//报错
+
  	FName GetCornerIcon() const override { return TEXT("Graph.Latent.LatentIcon"); }
  	FText GetMenuCategory() const override;
  	// End of UK2Node interface
@@ -36,11 +33,12 @@ public:
 	
 	UPROPERTY(Transient)
 	UFunction* AddGameTimeDurationEventsFunction;
+	UPROPERTY(Transient)
+	UFunction* RemoveGameTimeDurationEventsFunction;
 
 	UPROPERTY(Transient)
 	class UStruct* GameTimeConfigType;
 
-	FString EventParamName = TEXT("Event");
 private:
 	void AddEvent(UEdGraphPin* Pin);
 
@@ -50,6 +48,18 @@ private:
 
 	TArray<UEdGraphPin*> StartPins;
 	TArray<UEdGraphPin*> EventPins;
+
+	FName GetStartPinName(int32 Idx);
+	FName GetEventPinName(int32 Idx);
+
+	static FName BindPinName;
+	static FName UnbindPinName;
+	static FName IsBindPinName;
+	static FString EventName;
+
+	static FString StartParamName;
+	static FString EndParamName;
+	static FString EventParamName;
 };
 
 UCLASS()
