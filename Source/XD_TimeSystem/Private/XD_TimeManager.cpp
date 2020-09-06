@@ -404,10 +404,10 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 		}
 		else if (UXD_TimeManager* TimeManager = GameState->FindComponentByClass<UXD_TimeManager>())
 		{
-			TimeSystem_Warning_LOG("请在GameState继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
+			// TODO:请在GameState继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager
 			return TimeManager;
 		}
-		TimeSystem_Warning_LOG("请在GameState中添加TimeManager组件，并继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager");
+		// TODO:请在GameState中添加TimeManager组件，并继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager
 		return UXD_ActorFunctionLibrary::AddComponent<UXD_TimeManager>(GameState, TEXT("临时时间系统"));
 	}
 	return nullptr;
