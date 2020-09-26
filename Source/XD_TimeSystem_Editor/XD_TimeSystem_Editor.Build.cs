@@ -48,7 +48,6 @@ public class XD_TimeSystem_Editor : ModuleRules
                 "XD_TimeSystem",
                 "XD_UnrealLibraryEx",
                 "XD_UnrealLibraryEx_Editor",
-                "XD_SaveGameSystem",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

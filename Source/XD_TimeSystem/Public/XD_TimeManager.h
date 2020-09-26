@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include <Components/ActorComponent.h>
-#include "XD_SaveGameInterface.h"
+#include "GameSerializerInterface.h"
 #include "XD_TimeSystemType.h"
 #include <Engine/LatentActionManager.h>
 #include "XD_TimeManager.generated.h"
@@ -12,7 +12,7 @@
 DECLARE_DELEGATE(FXD_GameTimeNativeDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class XD_TIMESYSTEM_API UXD_TimeManager : public UActorComponent, public IXD_SaveGameInterface
+class XD_TIMESYSTEM_API UXD_TimeManager : public UActorComponent, public IComponentGameSerializerInterface
 {
 	GENERATED_BODY()
 
