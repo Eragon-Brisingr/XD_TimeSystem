@@ -7,14 +7,52 @@
 #include <IDetailChildrenBuilder.h>
 #include <Widgets/Input/STextComboBox.h>
 
-#include "XD_PropertyCustomizationEx.h"
 #include "XD_TimeSystemType.h"
-#include "XD_MacrosLibrary.h"
 
 #define LOCTEXT_NAMESPACE "XD_TimeSystem_Editor"
 
 constexpr float HorizontolPadding = 5.f;
 constexpr float VerticalPadding = 0.f;
+
+namespace GameTimePropertyCustomize
+{
+	UObject* GetOuter(const TSharedRef<IPropertyHandle>& PropertyHandle)
+	{
+		TArray<UObject*> Outers;
+		PropertyHandle->GetOuterObjects(Outers);
+		return Outers.Num() > 0 ? Outers[0] : nullptr;
+	}
+
+	template<typename ValueType>
+	ValueType GetValue(const TSharedPtr<IPropertyHandle>& PropertyHandle)
+	{
+		if (UObject* Outer = GetOuter(PropertyHandle.ToSharedRef()))
+		{
+			if (ValueType* Res = reinterpret_cast<ValueType*>(PropertyHandle->GetValueBaseAddress(reinterpret_cast<uint8*>(Outer))))
+			{
+				return *Res;
+			}
+		}
+		return {};
+	}
+
+	template<typename Type>
+	void SetValue(const TSharedPtr<IPropertyHandle>& PropertyHandle, const Type& Value, bool NotifyChange = true)
+	{
+		if (NotifyChange)
+		{
+			PropertyHandle->NotifyPreChange();
+		}
+		if (Type* Target = reinterpret_cast<Type*>(PropertyHandle->GetValueBaseAddress(reinterpret_cast<uint8*>(GetOuter(PropertyHandle.ToSharedRef())))))
+		{
+			*Target = Value;
+			if (NotifyChange)
+			{
+				PropertyHandle->NotifyPostChange(EPropertyValueSetFlags::DefaultFlags);
+			}
+		}
+	}
+}
 
 TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> StructPropertyHandle)
 {
@@ -42,14 +80,14 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 					.IsEnabled(!StructPropertyHandle->IsEditConst())
 					.Value_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(GameTime.GetYear());
 					})
 					.OnValueChanged_Lambda([=](int Value)
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						GameTime.SetYear(Value);
-						FPropertyCustomizeHelper::SetValue(StructPropertyHandle, GameTime);
+						GameTimePropertyCustomize::SetValue(StructPropertyHandle, GameTime);
 					})
 			]
 			+ SHorizontalBox::Slot()
@@ -75,14 +113,14 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 					.IsEnabled(!StructPropertyHandle->IsEditConst())
 					.Value_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(GameTime.GetMonth());
 					})
 					.OnValueChanged_Lambda([=](int Value)
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						GameTime.SetMonth(Value);
-						FPropertyCustomizeHelper::SetValue(StructPropertyHandle, GameTime);
+						GameTimePropertyCustomize::SetValue(StructPropertyHandle, GameTime);
 					})
 			]
 			+ SHorizontalBox::Slot()
@@ -103,12 +141,12 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 					.MinSliderValue(FXD_GameTime::MinValue().GetDay())
 					.MaxValue_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(FXD_GameTime::DaysInMonth(GameTime.GetYear(), GameTime.GetMonth()));
 					})
 					.MaxSliderValue_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(FXD_GameTime::DaysInMonth(GameTime.GetYear(), GameTime.GetMonth()));
 					})
 					.Delta(1)
@@ -116,14 +154,14 @@ TSharedRef<SWidget> CreateGameTimeHeaderView(TSharedRef<class IPropertyHandle> S
 					.IsEnabled(!StructPropertyHandle->IsEditConst())
 					.Value_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(GameTime.GetDay());
 					})
 					.OnValueChanged_Lambda([=](int Value)
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						GameTime.SetDay(Value);
-						FPropertyCustomizeHelper::SetValue(StructPropertyHandle, GameTime);
+						GameTimePropertyCustomize::SetValue(StructPropertyHandle, GameTime);
 					})
 			];
 }
@@ -154,14 +192,14 @@ TSharedRef<SWidget> CreateGameTimeBodyView(TSharedRef<class IPropertyHandle> Str
 					.IsEnabled(!StructPropertyHandle->IsEditConst())
 					.Value_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(GameTime.GetHour());
 					})
 					.OnValueChanged_Lambda([=](int Value)
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						GameTime.SetHour(Value);
-						FPropertyCustomizeHelper::SetValue(StructPropertyHandle, GameTime);
+						GameTimePropertyCustomize::SetValue(StructPropertyHandle, GameTime);
 					})
 			]
 			+ SHorizontalBox::Slot()
@@ -187,14 +225,14 @@ TSharedRef<SWidget> CreateGameTimeBodyView(TSharedRef<class IPropertyHandle> Str
 					.IsEnabled(!StructPropertyHandle->IsEditConst())
 					.Value_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(GameTime.GetMinute());
 					})
 					.OnValueChanged_Lambda([=](int Value)
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						GameTime.SetMinute(Value);
-						FPropertyCustomizeHelper::SetValue(StructPropertyHandle, GameTime);
+						GameTimePropertyCustomize::SetValue(StructPropertyHandle, GameTime);
 					})
 			]
 			+ SHorizontalBox::Slot()
@@ -220,14 +258,14 @@ TSharedRef<SWidget> CreateGameTimeBodyView(TSharedRef<class IPropertyHandle> Str
 					.IsEnabled(!StructPropertyHandle->IsEditConst())
 					.Value_Lambda([=]()
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						return TOptional<int32>(GameTime.GetSecond());
 					})
 					.OnValueChanged_Lambda([=](int Value)
 					{
-						FXD_GameTime GameTime = FPropertyCustomizeHelper::GetValue<FXD_GameTime>(StructPropertyHandle);
+						FXD_GameTime GameTime = GameTimePropertyCustomize::GetValue<FXD_GameTime>(StructPropertyHandle);
 						GameTime.SetSecond(Value);
-						FPropertyCustomizeHelper::SetValue(StructPropertyHandle, GameTime);
+						GameTimePropertyCustomize::SetValue(StructPropertyHandle, GameTime);
 					})
 			];
 }
@@ -290,14 +328,14 @@ void FXD_EveryHourConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
  						.Value_Lambda([=]()
  						{
- 							FXD_EveryHourConfig EveryHourConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryHourConfig>(StructPropertyHandle);
+ 							FXD_EveryHourConfig EveryHourConfig = GameTimePropertyCustomize::GetValue<FXD_EveryHourConfig>(StructPropertyHandle);
  							int32 Minute;
  							EveryHourConfig.GetConfig(Minute);
  							return TOptional<int32>(Minute);
  						})
  						.OnValueChanged_Lambda([=](int Value)
  						{
- 							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryHourConfig(Value));
+ 							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryHourConfig(Value));
  						})
 				]
 		];
@@ -337,17 +375,17 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryDayConfig EveryDayConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
+							FXD_EveryDayConfig EveryDayConfig = GameTimePropertyCustomize::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
 							int32 Hour, Minute;
 							EveryDayConfig.GetConfig(Hour, Minute);
 							return TOptional<int32>(Hour);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryDayConfig EveryDayConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
+							FXD_EveryDayConfig EveryDayConfig = GameTimePropertyCustomize::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
 							int32 Hour, Minute;
 							EveryDayConfig.GetConfig(Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryDayConfig(Value, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryDayConfig(Value, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -373,17 +411,17 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryDayConfig EveryDayConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
+							FXD_EveryDayConfig EveryDayConfig = GameTimePropertyCustomize::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
 							int32 Hour, Minute;
 							EveryDayConfig.GetConfig(Hour, Minute);
 							return TOptional<int32>(Minute);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryDayConfig EveryDayConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
+							FXD_EveryDayConfig EveryDayConfig = GameTimePropertyCustomize::GetValue<FXD_EveryDayConfig>(StructPropertyHandle);
 							int32 Hour, Minute;
 							EveryDayConfig.GetConfig(Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryDayConfig(Hour, Value));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryDayConfig(Hour, Value));
 						})
 				]
 		];
@@ -391,7 +429,7 @@ void FXD_EveryDayConfig_Customization::CustomizeHeader(TSharedRef<class IPropert
 
 FXD_EveryWeekConfig_Customization::FXD_EveryWeekConfig_Customization()
 {
-	if (const UEnum* DayOfWeek = FindObject<UEnum>(ANY_PACKAGE, *GET_TYPE_CPP_NAME_STRING_CHECKED(EXD_DayOfWeek), true))
+	if (const UEnum* DayOfWeek = StaticEnum<EXD_DayOfWeek>())
 	{
 		for (int32 Idx = 0; Idx < DayOfWeek->NumEnums() - 1; ++Idx)
 		{
@@ -402,7 +440,7 @@ FXD_EveryWeekConfig_Customization::FXD_EveryWeekConfig_Customization()
 
 void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	FXD_EveryWeekConfig EveryWeekConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
+	FXD_EveryWeekConfig EveryWeekConfig = GameTimePropertyCustomize::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
 	int32 WeekDay, Hour, Minute;
 	EveryWeekConfig.GetConfig(WeekDay, Hour, Minute);
 	TSharedPtr<FString> SelectedItem = WeekDay < WeekEnumNameList.Num() ? WeekEnumNameList[WeekDay] : nullptr;
@@ -434,10 +472,10 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 							if (SelectInfo == ESelectInfo::OnMouseClick)
 							{
 								int32 Value = WeekEnumNameList.IndexOfByKey(Selection);
-								FXD_EveryWeekConfig EveryWeekConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
+								FXD_EveryWeekConfig EveryWeekConfig = GameTimePropertyCustomize::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
 								int32 WeekDay, Hour, Minute;
 								EveryWeekConfig.GetConfig(WeekDay, Hour, Minute);
-								FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryWeekConfig(Value, Hour, Minute));
+								GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryWeekConfig(Value, Hour, Minute));
 							}
 						})
 						.InitiallySelectedItem(SelectedItem)
@@ -466,17 +504,17 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryWeekConfig EveryWeekConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
+							FXD_EveryWeekConfig EveryWeekConfig = GameTimePropertyCustomize::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryWeekConfig.GetConfig(Day, Hour, Minute);
 							return TOptional<int32>(Hour);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryWeekConfig EveryWeekConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
+							FXD_EveryWeekConfig EveryWeekConfig = GameTimePropertyCustomize::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryWeekConfig.GetConfig(Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryWeekConfig(Day, Value, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryWeekConfig(Day, Value, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -502,17 +540,17 @@ void FXD_EveryWeekConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryWeekConfig EveryWeekConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
+							FXD_EveryWeekConfig EveryWeekConfig = GameTimePropertyCustomize::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryWeekConfig.GetConfig(Day, Hour, Minute);
 							return TOptional<int32>(Minute);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryWeekConfig EveryWeekConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
+							FXD_EveryWeekConfig EveryWeekConfig = GameTimePropertyCustomize::GetValue<FXD_EveryWeekConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryWeekConfig.GetConfig(Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryWeekConfig(Day, Hour, Value));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryWeekConfig(Day, Hour, Value));
 						})
 				]
 		];
@@ -552,17 +590,17 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryMonthConfig EveryMonthConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
+							FXD_EveryMonthConfig EveryMonthConfig = GameTimePropertyCustomize::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryMonthConfig.GetConfig(Day, Hour, Minute);
 							return TOptional<int32>(Day);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryMonthConfig EveryMonthConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
+							FXD_EveryMonthConfig EveryMonthConfig = GameTimePropertyCustomize::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryMonthConfig.GetConfig(Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryMonthConfig(Value, Hour, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryMonthConfig(Value, Hour, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -588,17 +626,17 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryMonthConfig EveryMonthConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
+							FXD_EveryMonthConfig EveryMonthConfig = GameTimePropertyCustomize::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryMonthConfig.GetConfig(Day, Hour, Minute);
 							return TOptional<int32>(Hour);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryMonthConfig EveryMonthConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
+							FXD_EveryMonthConfig EveryMonthConfig = GameTimePropertyCustomize::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryMonthConfig.GetConfig(Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryMonthConfig(Day, Value, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryMonthConfig(Day, Value, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -624,17 +662,17 @@ void FXD_EveryMonthConfig_Customization::CustomizeHeader(TSharedRef<class IPrope
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryMonthConfig EveryMonthConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
+							FXD_EveryMonthConfig EveryMonthConfig = GameTimePropertyCustomize::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryMonthConfig.GetConfig(Day, Hour, Minute);
 							return TOptional<int32>(Minute);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryMonthConfig EveryMonthConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
+							FXD_EveryMonthConfig EveryMonthConfig = GameTimePropertyCustomize::GetValue<FXD_EveryMonthConfig>(StructPropertyHandle);
 							int32 Day, Hour, Minute;
 							EveryMonthConfig.GetConfig(Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryMonthConfig(Day, Hour, Value));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryMonthConfig(Day, Hour, Value));
 						})
 				]
 		];
@@ -674,17 +712,17 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
 							return TOptional<int32>(Month);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Value, Day, Hour, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Value, Day, Hour, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -710,17 +748,17 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
 							return TOptional<int32>(Day);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Month, Value, Hour, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Month, Value, Hour, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -746,17 +784,17 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
 							return TOptional<int32>(Hour);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Month, Day, Value, Minute));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Month, Day, Value, Minute));
 						})
 				]
 				+ SHorizontalBox::Slot()
@@ -782,17 +820,17 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 						.IsEnabled(!StructPropertyHandle->IsEditConst())
 						.Value_Lambda([=]()
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
 							return TOptional<int32>(Minute);
 						})
 						.OnValueChanged_Lambda([=](int Value)
 						{
-							FXD_EveryYearConfig EveryYearConfig = FPropertyCustomizeHelper::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
+							FXD_EveryYearConfig EveryYearConfig = GameTimePropertyCustomize::GetValue<FXD_EveryYearConfig>(StructPropertyHandle);
 							int32 Month, Day, Hour, Minute;
 							EveryYearConfig.GetConfig(Month, Day, Hour, Minute);
-							FPropertyCustomizeHelper::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Month, Day, Hour, Value));
+							GameTimePropertyCustomize::SetValue(StructPropertyHandle, FXD_EveryYearConfig(Month, Day, Hour, Value));
 						})
 				]
 		];
@@ -800,7 +838,7 @@ void FXD_EveryYearConfig_Customization::CustomizeHeader(TSharedRef<class IProper
 
 void FXD_SpecialTimeConfig_Customization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = FPropertyCustomizeHelper::GetPropertyHandleByName(StructPropertyHandle, GET_MEMBER_NAME_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
+	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
 	HeaderRow.FilterString(StructPropertyHandle->GetPropertyDisplayName())
 		.NameContent()
 		[
@@ -815,7 +853,7 @@ void FXD_SpecialTimeConfig_Customization::CustomizeHeader(TSharedRef<class IProp
 
 void FXD_SpecialTimeConfig_Customization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = FPropertyCustomizeHelper::GetPropertyHandleByName(StructPropertyHandle, GET_MEMBER_NAME_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
+	TSharedPtr<IPropertyHandle> SpecialTime_TimeHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FXD_SpecialTimeConfig, SpecialTime));
 	StructBuilder.AddCustomRow(FText::GetEmpty())
 		.ValueContent()
 		.HAlign(HAlign_Fill)

@@ -2,12 +2,12 @@
 
 #include "XD_TimeManager.h"
 #include <Net/UnrealNetwork.h>
+#include <GameFramework/GameStateBase.h>
+#include <EngineUtils.h>
+
 #include "XD_TimeSystemUtility.h"
 #include "XD_TimeSystem_GameStateInterface.h"
-#include <GameFramework/GameStateBase.h>
 #include "XD_GameTimeEventInterface.h"
-#include <EngineUtils.h>
-#include "XD_ActorFunctionLibrary.h"
 #include "XD_TimeManagerPreview.h"
 #include "XD_TimeSystemSettings.h"
 
@@ -408,7 +408,10 @@ UXD_TimeManager* UXD_TimeManager::GetGameTimeManager(const UObject* WorldContext
 			return TimeManager;
 		}
 		// TODO:请在GameState中添加TimeManager组件，并继承接口XD_TimeSystem_GameStateInterface并实现GetGameTimeManager
-		return UXD_ActorFunctionLibrary::AddComponent<UXD_TimeManager>(GameState, TEXT("临时时间系统"));
+		UXD_TimeManager* TimeManager = NewObject<UXD_TimeManager>(GameState, TEXT("临时时间系统"));
+		GameState->AddOwnedComponent(TimeManager);
+		TimeManager->RegisterComponent();
+		return TimeManager;
 	}
 	return nullptr;
 }

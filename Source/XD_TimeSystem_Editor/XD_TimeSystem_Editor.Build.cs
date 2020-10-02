@@ -46,8 +46,6 @@ public class XD_TimeSystem_Editor : ModuleRules
                 "ToolMenus",
 
                 "XD_TimeSystem",
-                "XD_UnrealLibraryEx",
-                "XD_UnrealLibraryEx_Editor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
