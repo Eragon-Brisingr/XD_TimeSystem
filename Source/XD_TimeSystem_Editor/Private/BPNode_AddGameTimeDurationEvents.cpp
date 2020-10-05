@@ -106,7 +106,7 @@ void UBPNode_AddGameTimeDurationEvents::ExpandNode(class FKismetCompilerContext&
 
 		//创建委托
 		UK2Node_CustomEvent* TimeEvent = CompilerContext.SpawnIntermediateEventNode<UK2Node_CustomEvent>(this, AddTimeEventFunction->FindPinChecked(EventParamName), SourceGraph);
-		TimeEvent->CustomFunctionName = *FString::Printf(TEXT("%s_[%s]_[%d]"), *GetNodeTitle(ENodeTitleType::FullTitle).ToString(), *CompilerContext.GetGuid(this), Idx + 1);
+		TimeEvent->CustomFunctionName = *FString::Printf(TEXT("%s_%s_%d"), *GetNodeTitle(ENodeTitleType::FullTitle).ToString(), *CompilerContext.GetGuid(this), Idx + 1);
 		TimeEvent->AllocateDefaultPins();
 		TimeEvents.Add(TimeEvent);
 
