@@ -45,12 +45,18 @@ void UBPNode_AddGameTimeDurationEvents::AllocateDefaultPins()
 {
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, NAME_None, BindPinName);
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, NAME_None, UnbindPinName);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Boolean, NAME_None, IsBindPinName);
 
-	for (int i = 1; i <= EventsNumber; ++i)
+	for (int32 Idx = 1; Idx <= EventsNumber; ++Idx)
 	{
-		AddEvent_Impl(i);
+		FCreatePinParams InTextPinCreatePinParams;
+		InTextPinCreatePinParams.bIsReference = true;
+		InTextPinCreatePinParams.bIsConst = true;
+
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, GameTimeConfigType, GetStartPinName(Idx), InTextPinCreatePinParams);
+		CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, nullptr, GetEventPinName(Idx));
 	}
+	
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Boolean, NAME_None, IsBindPinName);
 }
 
 void UBPNode_AddGameTimeDurationEvents::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
@@ -192,18 +198,18 @@ void UBPNode_AddGameTimeDurationEvents::GetNodeContextMenuActions(class UToolMen
 					LOCTEXT("移除该事件", "移除该事件"),
 					FSlateIcon(),
 					FUIAction(
-						FExecuteAction::CreateUObject(this, &UBPNode_AddGameTimeDurationEvents::RemoveEvent, const_cast<UEdGraphPin*>(Context->Pin))
+						FExecuteAction::CreateUObject(const_cast<UBPNode_AddGameTimeDurationEvents*>(this), &UBPNode_AddGameTimeDurationEvents::RemoveEvent)
 					)
 				);
 			}
 		}
 		Section.AddMenuEntry(
-			TEXT("RemoveTimeEvent"),
+			TEXT("AddTimeEvent"),
 			LOCTEXT("增加时间事件", "增加时间事件"),
 			LOCTEXT("增加时间事件", "增加时间事件"),
 			FSlateIcon(),
 			FUIAction(
-				FExecuteAction::CreateUObject(this, &UBPNode_AddGameTimeDurationEvents::AddEvent, const_cast<UEdGraphPin*>(Context->Pin))
+				FExecuteAction::CreateUObject(const_cast<UBPNode_AddGameTimeDurationEvents*>(this), &UBPNode_AddGameTimeDurationEvents::AddEvent)
 			)
 		);
 	}
@@ -214,51 +220,25 @@ FText UBPNode_AddGameTimeDurationEvents::GetMenuCategory() const
 	return LOCTEXT("游戏|时间系统", "游戏|时间系统");
 }
 
-void UBPNode_AddGameTimeDurationEvents::AddEvent(UEdGraphPin* Pin)
+FText UBPNode_AddGameTimeDurationEvents::MakeTimeNodeTitle(ENodeTitleType::Type TitleType, const FText& Title) const
 {
-	Modify();
+	if (TitleType != ENodeTitleType::FullTitle)
+	{
+		return Title;
+	}
+	return FText::Format(LOCTEXT("TimeNodeFullTitle", "{0} [{1}]\n{2}"), Title, EventsNumber, GetClass()->GetDisplayNameText());
+}
 
+void UBPNode_AddGameTimeDurationEvents::AddEvent()
+{
 	EventsNumber += 1;
-	AddEvent_Impl(EventsNumber);
-
-	const bool bIsCompiling = GetBlueprint()->bBeingCompiled;
-	if (!bIsCompiling)
-	{
-		FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
-	}
+	ReconstructNode();
 }
 
-void UBPNode_AddGameTimeDurationEvents::AddEvent_Impl(int32 Idx)
+void UBPNode_AddGameTimeDurationEvents::RemoveEvent()
 {
-	FCreatePinParams InTextPinCreatePinParams;
-	InTextPinCreatePinParams.bIsReference = true;
-	InTextPinCreatePinParams.bIsConst = true;
-
-	StartPins.Add(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, GameTimeConfigType, GetStartPinName(Idx), InTextPinCreatePinParams));
-
-	EventPins.Add(CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, NULL, GetEventPinName(Idx)));
-}
-
-void UBPNode_AddGameTimeDurationEvents::RemoveEvent(UEdGraphPin* Pin)
-{
-	Modify();
-
-	int32 Idx = EventPins.IndexOfByPredicate([&](UEdGraphPin* E) {return E == Pin; });
-	if (Idx != INDEX_NONE)
-	{
-		EventsNumber -= 1;
-
-		RemovePin(StartPins[Idx]);
-		RemovePin(EventPins[Idx]);
-		StartPins.RemoveAt(Idx);
-		EventPins.RemoveAt(Idx);
-	}
-
-	const bool bIsCompiling = GetBlueprint()->bBeingCompiled;
-	if (!bIsCompiling)
-	{
-		FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
-	}
+	EventsNumber -= 1;
+	ReconstructNode();
 }
 
 UBPNode_AddEveryHourCircleEvents::UBPNode_AddEveryHourCircleEvents()
@@ -270,7 +250,7 @@ UBPNode_AddEveryHourCircleEvents::UBPNode_AddEveryHourCircleEvents()
 
 FText UBPNode_AddEveryHourCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("Add Every Hour Circle Events", "Add Every Hour Circle Events");
+	return MakeTimeNodeTitle(TitleType, LOCTEXT("Add Every Hour Circle Events", "Add Every Hour Circle Events"));
 }
 
 UBPNode_AddEveryDayCircleEvents::UBPNode_AddEveryDayCircleEvents()
@@ -282,7 +262,7 @@ UBPNode_AddEveryDayCircleEvents::UBPNode_AddEveryDayCircleEvents()
 
 FText UBPNode_AddEveryDayCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("Add Every Day Circle Events", "Add Every Day Circle Events");
+	return MakeTimeNodeTitle(TitleType, LOCTEXT("Add Every Day Circle Events", "Add Every Day Circle Events"));
 }
 
 UBPNode_AddEveryWeekCircleEvents::UBPNode_AddEveryWeekCircleEvents()
@@ -294,7 +274,7 @@ UBPNode_AddEveryWeekCircleEvents::UBPNode_AddEveryWeekCircleEvents()
 
 FText UBPNode_AddEveryWeekCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("Add Every Week Circle Events", "Add Every Week Circle Events");
+	return MakeTimeNodeTitle(TitleType, LOCTEXT("Add Every Week Circle Events", "Add Every Week Circle Events"));
 }
 
 UBPNode_AddEveryMonthCircleEvents::UBPNode_AddEveryMonthCircleEvents()
@@ -306,7 +286,7 @@ UBPNode_AddEveryMonthCircleEvents::UBPNode_AddEveryMonthCircleEvents()
 
 FText UBPNode_AddEveryMonthCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("Add Every Month Circle Events", "Add Every Month Circle Events");
+	return MakeTimeNodeTitle(TitleType, LOCTEXT("Add Every Month Circle Events", "Add Every Month Circle Events"));
 }
 
 UBPNode_AddEveryYearCircleEvents::UBPNode_AddEveryYearCircleEvents()
@@ -318,7 +298,7 @@ UBPNode_AddEveryYearCircleEvents::UBPNode_AddEveryYearCircleEvents()
 
 FText UBPNode_AddEveryYearCircleEvents::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("Add Every Year Circle Events", "Add Every Year Circle Events");
+	return MakeTimeNodeTitle(TitleType, LOCTEXT("Add Every Year Circle Events", "Add Every Year Circle Events"));
 }
 
 #undef LOCTEXT_NAMESPACE

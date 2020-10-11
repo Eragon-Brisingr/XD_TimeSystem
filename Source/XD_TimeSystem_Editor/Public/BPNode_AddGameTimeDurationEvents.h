@@ -39,15 +39,11 @@ public:
 	UPROPERTY(Transient)
 	class UStruct* GameTimeConfigType;
 
+protected:
+	FText MakeTimeNodeTitle(ENodeTitleType::Type TitleType, const FText& Title) const;
 private:
-	void AddEvent(UEdGraphPin* Pin);
-
-	void RemoveEvent(UEdGraphPin* Pin);
-
-	void AddEvent_Impl(int32 Idx);
-
-	TArray<UEdGraphPin*> StartPins;
-	TArray<UEdGraphPin*> EventPins;
+	void AddEvent();
+	void RemoveEvent();
 
 	FName GetStartPinName(int32 Idx);
 	FName GetEventPinName(int32 Idx);
@@ -62,7 +58,7 @@ private:
 	static FString EventParamName;
 };
 
-UCLASS()
+UCLASS(meta = (DisplayName = "每时循环事件"))
 class XD_TIMESYSTEM_EDITOR_API UBPNode_AddEveryHourCircleEvents : public UBPNode_AddGameTimeDurationEvents
 {
 	GENERATED_BODY()
@@ -72,8 +68,7 @@ public:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 };
 
-
-UCLASS()
+UCLASS(meta = (DisplayName = "每日循环事件"))
 class XD_TIMESYSTEM_EDITOR_API UBPNode_AddEveryDayCircleEvents : public UBPNode_AddGameTimeDurationEvents
 {
 	GENERATED_BODY()
@@ -83,7 +78,7 @@ public:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 };
 
-UCLASS()
+UCLASS(meta = (DisplayName = "每周循环事件"))
 class XD_TIMESYSTEM_EDITOR_API UBPNode_AddEveryWeekCircleEvents : public UBPNode_AddGameTimeDurationEvents
 {
 	GENERATED_BODY()
@@ -93,7 +88,7 @@ public:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 };
 
-UCLASS()
+UCLASS(meta = (DisplayName = "每月循环事件"))
 class XD_TIMESYSTEM_EDITOR_API UBPNode_AddEveryMonthCircleEvents : public UBPNode_AddGameTimeDurationEvents
 {
 	GENERATED_BODY()
@@ -103,7 +98,7 @@ public:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 };
 
-UCLASS()
+UCLASS(meta = (DisplayName = "每年循环事件"))
 class XD_TIMESYSTEM_EDITOR_API UBPNode_AddEveryYearCircleEvents : public UBPNode_AddGameTimeDurationEvents
 {
 	GENERATED_BODY()
